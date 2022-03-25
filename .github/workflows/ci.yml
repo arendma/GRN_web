@@ -1,0 +1,22 @@
+
+name: GRN_web Continuous Integration
+
+on: [push]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: "Build Docker image"
+      run: |
+        pwd
+        ls -ahls
+        docker build -t grn-web .
+    - name: "Show installed R packages / versions"
+      run: docker run -it grn-web Rscript -e "installed.packages()"
+    - name: "Run test.r example script"
+      run: docker run -it grn-web Rscript test.r
