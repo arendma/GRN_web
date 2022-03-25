@@ -1,13 +1,15 @@
-### GRN WEB
+# GRN_web
+
 This repository contains code for accessing the consensus and PHOT network from 
-the publication [Widening the landscape of transcriptional regulation of algal photoprotection](https://www.biorxiv.org/content/10.1101/2022.02.25.482034v3) to be developed into a webtool
+the publication [Widening the landscape of transcriptional regulation of algal photoprotection](https://www.biorxiv.org/content/10.1101/2022.02.25.482034v3) to be developed into a web tool.
 
-##Setup
+## Setup
+
 - install R according to your OS installation instructions
-- Inside R change the working directory to ./Program/ and type `source("setup.r")` to install nescesarry packages
+- inside R, change the working directory to `./Program/` and type `source("setup.r")` to install necessary packages
 
-##TEST
+## Usage example
 
-the script Program/test.r contains an example of the functions and how they are used
+The script `Program/test.r` contains an example of the functions and how they are used.
 
 
