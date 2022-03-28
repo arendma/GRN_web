@@ -17,6 +17,6 @@ jobs:
         ls -ahls
         docker build -t grn-web .
     - name: "Show installed R packages / versions"
-      run: docker run -it grn-web Rscript -e "installed.packages()"
+      run: docker run -t grn-web Rscript -e "installed.packages()"
     - name: "Run test.r example script"
-      run: docker run -it grn-web Rscript test.r
+      run: docker run -t grn-web Rscript test.r
