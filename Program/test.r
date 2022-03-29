@@ -5,9 +5,9 @@ source('netwk_anav2.R')
 mads_ids=c('Cre11.g467577', 'Cre06.g253250')
 
 #Consensus network
-consensus=read.delim('../Data/consensus0.1.tab')
+consensus=read.delim('../Data/consensus0.1.tab', stringsAsFactors = FALSE)
 #PHOT network
-phot=read.delim('../Data/gen3x0.1consens.tab')
+phot=read.delim('../Data/gen3x0.1consens.tab', stringsAsFactors = FALSE)
 
 #extract top 25 targets for the two mads tfs in the consensus network
 cons_madstar1=regtarget(consensus,mads_ids[1], 25)
