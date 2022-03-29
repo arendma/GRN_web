@@ -1,15 +1,17 @@
 FROM ubuntu:20.04
 
-# some package depends on tzdata, so we need this workaround:
-# https://serverfault.com/questions/949991/how-to-install-tzdata-on-a-ubuntu-docker-image
-RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get update && \
-    apt-get upgrade -y && \
-    apt-get -y install tzdata
+RUN apt-get update
 
-RUN apt-get install r-base-core -y
+# Ubuntu 20.04 uses R 3.x, but we want to use R 4.x instead
+RUN apt-get -y install software-properties-common && \
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 && \
+    add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/' && \
+    apt-get update && \
+    apt-get install r-base-core -y
 
 # We'll copy setup.r and run it before copying all other files,
 # so that changing other R files doesn't cause unnecessary reinstalls
+# when rebuilding the Docker container.
 COPY Program/setup.r /opt/grn-web/Program/
 RUN Rscript /opt/grn-web/Program/setup.r
 
