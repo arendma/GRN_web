@@ -20,3 +20,6 @@ COPY Data/ /opt/grn-web/Data/
 COPY README.md /opt/grn-web/
 
 WORKDIR /opt/grn-web/Program
+
+# open port used by our shiny app (defined in app.R)
+EXPOSE 8181

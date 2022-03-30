@@ -1,4 +1,6 @@
 library(shiny)
+options(shiny.host = '0.0.0.0')
+options(shiny.port = 8181)
 
 source('netwk_anav2.R')
 
@@ -29,5 +31,5 @@ server <- function(input, output) {
   })
 }
 
-# Run the application 
+# Run the shiny app with the options given above
 shinyApp(ui = ui, server = server)
