@@ -35,7 +35,10 @@ ui <- fluidPage(
       
       # main panel for outputs on the right
       mainPanel(
+        h4("Top targets in consensus network:"),
         tableOutput(outputId = "topConsensusTargets"),
+        
+        h4("Top targets in PHOT network:"),
         tableOutput(outputId = "topPhotTargets")
       )
     )
