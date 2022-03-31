@@ -19,4 +19,4 @@ jobs:
     - name: "Show R working directory"
       run: docker run -t grn-web Rscript -e "getwd()"
     - name: "Run test.r example script"
-      run: docker run -t grn-web Rscript test.r
+      run: docker run -t grn-web Rscript test.R
