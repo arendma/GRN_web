@@ -5,7 +5,7 @@ the publication [Widening the landscape of transcriptional regulation of algal p
 
 ## Setup
 
-- install R according to your OS installation instructions
+- install R(>v.4.0) according to your OS installation instructions
 - inside R, change the working directory to `./Program/` and type `source("setup.r")` to install necessary packages
 
 ## Usage example
