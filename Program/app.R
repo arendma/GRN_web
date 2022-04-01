@@ -45,13 +45,19 @@ ui <- fluidPage(
 )
 
 server <- function(input, output) {
+  # By default, renderTable() formats numbers differently than normal R.
+  # Here, we try to emulate normal formatting.
+  # 's: string, 'g': scientific format (but only if shorter than printing all digits)
+  targetsTableFormat = c('s', 's', 's', 'g')
+  targetsTableNumDigits = 5
+
   output$topConsensusTargets = renderTable({
     regtarget(consensus, input$geneID, input$num_top_targets)
-  })
+  }, digits=targetsTableNumDigits, display=targetsTableFormat)
   
   output$topPhotTargets = renderTable({
     regtarget(phot, input$geneID, input$num_top_targets)
-  })
+  }, digits=targetsTableNumDigits, display=targetsTableFormat)
 }
 
 # Run the shiny app with the options given above
