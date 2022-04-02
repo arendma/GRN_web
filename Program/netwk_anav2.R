@@ -1,4 +1,6 @@
-#Function to extract prediction from grns
+source('genenamecleanupv2.R')
+
+# Functions to extract prediction from grns
 
 
 regtarget = function(netwk, reg_ID5_5, topx=NULL) {
@@ -6,7 +8,6 @@ regtarget = function(netwk, reg_ID5_5, topx=NULL) {
   #a JGI Cre5.5 gene ID, and topx which is either an integer of highest ranked genes to return
   #or a list of gene IDs. If  a list of genen names is given all genes above the lowest ranking of these
   #genes is returned. if topx=NULL all results are returned 
-  source('genenamecleanupv2.r')
   phyto_gn =  genenamecleanup()
   if(colnames(netwk)[3]!='weight') {
     netwk <- data.frame(netwk, weight = 1/netwk[,3])
@@ -38,7 +39,6 @@ regTFs = function(netwk, target_ID5_5, topx=NULL){
   # target_ID5_5: string a JGI Cre5.5 gene ID of the target
   # topx: integer number of interactions to return if topx=NULL all regulators are returned
   # Output: data frame, df[1]=from, df[2]=to, df[3]= weight/rank, df[4] only if df[3] is rank a column wit 1/df[3] is attached as weight and returned
-  source('genenamecleanupv2.r')
   phyto_gn =  genenamecleanup()
   if(colnames(netwk)[3]!='weight') {
     netwk <- data.frame(netwk, weight = 1/netwk[,3])
@@ -62,7 +62,6 @@ regTFls <- function(netwk, GOIs, topx=25,  file=NULL) {
   # GOIs: charcater vector of JGI Cre5.5 of targets
   # topx: nubmer of top regulators to consider and return default=25, if this is NULL all entries are returned
   # file: optional(string with relative path and prefix, if given a tsv with all found regulators and graphs of the networks with topx regulators are saved
-  source('genenamecleanupv2.r')
   require(igraph)
   phyto_gn =  genenamecleanup()
   if(colnames(netwk)[3]!='weight') {

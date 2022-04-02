@@ -1,5 +1,5 @@
 #setup script installing nescessary packages if not present
-packs = c("igraph")
+packs = c("igraph", "shiny")
 bcpacks = c()
 
 for (pack in packs) {
