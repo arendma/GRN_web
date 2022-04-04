@@ -47,7 +47,12 @@ ui <- fluidPage(
 server <- function(input, output) {
   # By default, renderTable() formats numbers differently than normal R.
   # Here, we try to emulate normal formatting.
-  # 's: string, 'g': scientific format (but only if shorter than printing all digits)
+  #
+  # targets table has ncol=3, but renderTable adds row names as the first
+  # column. Thus, targetsTableFormat contains the formatting for ncol=4.
+  # 's': string
+  # 'g': print all digits or convert to scientific format
+  #      (whatever is shorter)
   targetsTableFormat = c('s', 's', 's', 'g')
   targetsTableNumDigits = 5
 
