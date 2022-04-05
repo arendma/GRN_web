@@ -17,7 +17,7 @@ cregoenricher <- function(samples, universe, resdir, category)  {
   ##GO enrichment
   #Import C.re. GO terms from file
   annot <- read.delim(file = "../Data/Creinhardtii_281_v5.6.annotation_info.txt",header = T,sep = "\t",row.names = 1,stringsAsFactors = F)
-  anno <- sapply(unique(annot$locusName),function(n){return(unique(unlist(strsplit(c(annot$GO[which(annot$locusName==n)]),split = ","))))})
+  anno <- sapply(unique(annot$locusName),function(n){return(unique(unlist(strsplit(c(annot$GO[which(annot$locusName==n)]),split = " "))))})
   #They should be unique
   gnames <- unique(names(anno))
   ##check for proper gene names
