@@ -2,7 +2,7 @@ cregoenricher <- function(samples, universe, resdir, category)  {
   require(ggplot2)
   require(GO.db)
   require(topGO)
-  #require(readxl)
+  require(readxl)
   ##Input: samples=list of (limma DE result data frames or list of character vectors) 
   #   universe=data frame of expression data (rownames = gene names)
   #   resdir=output directory
@@ -13,7 +13,7 @@ cregoenricher <- function(samples, universe, resdir, category)  {
     stop('category must be either "MF" or "BP"')
   }
   source('ggendotplotv2.r')
- 
+  source('dircreater.r')
   ##GO enrichment
   #Import C.re. GO terms from file
   annot <- read.delim(file = "../Data/Creinhardtii_281_v5.6.annotation_info.txt",header = T,sep = "\t",row.names = 1,stringsAsFactors = F)
@@ -21,7 +21,7 @@ cregoenricher <- function(samples, universe, resdir, category)  {
   #They should be unique
   gnames <- unique(names(anno))
   ##check for proper gene names
-  if (class(samples) %in% 'data.frame') {universe=rownames(universe)}
+  if (class(universe) %in% 'data.frame') {universe=rownames(universe)}
   if (sum(!substr(universe,1,3)=='Cre')>0) {
     stop('improper labelled genes in universe!')
   }
