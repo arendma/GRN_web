@@ -1,8 +1,8 @@
 cregoenricher <- function(samples, universe, resdir, category)  {
-  library(ggplot2)
-  library(GO.db)
-  library(topGO)
-  library(readxl)
+  require(ggplot2)
+  require(GO.db)
+  require(topGO)
+  #require(readxl)
   ##Input: samples=list of (limma DE result data frames or list of character vectors) 
   #   universe=data frame of expression data (rownames = gene names)
   #   resdir=output directory
@@ -12,22 +12,21 @@ cregoenricher <- function(samples, universe, resdir, category)  {
   if (!(category %in% c('MF','BP'))) {
     stop('category must be either "MF" or "BP"')
   }
-  source('dircreater.r')
   source('ggendotplotv2.r')
  
-  dircreater(resdir)
   ##GO enrichment
   #Import C.re. GO terms from file
   annot <- read.delim(file = "../Data/Creinhardtii_281_v5.6.annotation_info.txt",header = T,sep = "\t",row.names = 1,stringsAsFactors = F)
   anno <- sapply(unique(annot$locusName),function(n){return(unique(unlist(strsplit(c(annot$GO[which(annot$locusName==n)]),split = ","))))})
   #They should be unique
   gnames <- unique(names(anno))
-  ##check for proper gene names 
-  if (sum(!substr(rownames(universe),1,3)=='Cre')>0) {
+  ##check for proper gene names
+  if (class(samples) %in% 'data.frame') {universe=rownames(universe)}
+  if (sum(!substr(universe,1,3)=='Cre')>0) {
     stop('improper labelled genes in universe!')
   }
   #select only expressed genes (all genes are contained in gnames)
-  mygene_name=gnames[which(gnames%in%rownames(universe))]
+  mygene_name=gnames[which(gnames%in%universe)]
   #Complile list Gene Name -> GO term
   geneGO <- anno[mygene_name]
   
@@ -73,17 +72,17 @@ cregoenricher <- function(samples, universe, resdir, category)  {
   NPQ_goi=read.delim('../Data/NPQ genes.txt')
   NPQ_goi=NPQ_goi[nchar(NPQ_goi$ID5_5)>0,]
   #add an entry with the genes present in the universe - id has to be 10 character long
-  GO_mygene=c(GO_mygene, 'OWN:000001'=list(NPQ_goi$ID5_5[NPQ_goi$ID5_5 %in% rownames(universe)]))
+  GO_mygene=c(GO_mygene, 'OWN:000001'=list(NPQ_goi$ID5_5[NPQ_goi$ID5_5 %in% universe]))
   #Add term to term list
   GO2NAME=c(GO2NAME, 'OWN:000001'='Photoprotective response related')
   #Import compiled CCM list
   CCM_goi=read.delim('../Data/CCM genes.txt')
   CCM_goi=CCM_goi[nchar(CCM_goi$ID5_5)>0,]
-  GO_mygene=c(GO_mygene, 'OWN:000002'=list(CCM_goi$ID5_5[CCM_goi$ID5_5 %in% rownames(universe)]))
+  GO_mygene=c(GO_mygene, 'OWN:000002'=list(CCM_goi$ID5_5[CCM_goi$ID5_5 %in% universe]))
   GO2NAME=c(GO2NAME, 'OWN:000002'='Ci Concentration Mechanism related')
   #Import selected nitrogen genes based on schollinger study 
   N2_goi=read_excel('../Data/used_genes_schmollinger_et_al.xlsx')
-  GO_mygene=c(GO_mygene, 'OWN:000003'=list(N2_goi$LocusID[N2_goi$LocusID %in% rownames(universe)]))
+  GO_mygene=c(GO_mygene, 'OWN:000003'=list(N2_goi$LocusID[N2_goi$LocusID %in% universe]))
   GO2NAME=c(GO2NAME, 'OWN:000003'='Nitrogen starvation response genes')
   
   #also create an assembled dataframe of important genes to pass it for plotting
@@ -217,7 +216,7 @@ cregoenricher <- function(samples, universe, resdir, category)  {
   }
   
   sigGO <- nosigGO(clPres)
-  write.table(data.frame(k=names(sigGO), sig_GOterm=sigGO), file.path(resdir, paste(category,'_sigGOvsk.xls', sep='')), row.names = F)
+  write.table(data.frame(k=names(sigGO), sig_GOterm=sigGO), file.path(resdir, paste(category,'_sigGOvsk.tab', sep='')), row.names = F)
   detach('package:topGO', unload=TRUE)
   detach('package:GO.db', unload=TRUE)
   detach('package:ggplot2', unload=TRUE)
