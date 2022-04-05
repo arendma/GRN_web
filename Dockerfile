@@ -1,13 +1,9 @@
-FROM ubuntu:20.04
+# Use base image from https://www.rocker-project.org/
+FROM rocker/shiny-verse:4.1.3
 
-RUN apt-get update
-
-# Ubuntu 20.04 uses R 3.x, but we want to use R 4.x instead
-RUN apt-get -y install software-properties-common && \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 && \
-    add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/' && \
-    apt-get update && \
-    apt-get install r-base-core -y
+# This is needed to avoid "libglpk.so.40: cannot open shared object file",
+# cf. https://stackoverflow.com/questions/71609407/unable-to-attach-igraph-or-highcharter-in-rstudio-libglpk-so-40-cannot-open-sh
+RUN apt-get update && apt-get install -y libglpk-dev
 
 # We'll copy setup.r and run it before copying all other files,
 # so that changing other R files doesn't cause unnecessary reinstalls
