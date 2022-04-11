@@ -1,9 +1,10 @@
 name: heroku_deploy
-    on:                         
-        push:                           
-            branches:
-                - develop
-                - enh/deploy-to-heroku
+on:
+  push:
+    branches:
+      - develop
+      - enh/deploy-to-heroku
+
 jobs:                        
     build:                          
     runs-on: ubuntu-latest                        
