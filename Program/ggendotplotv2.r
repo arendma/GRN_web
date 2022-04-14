@@ -3,14 +3,22 @@ ggendotplot <- function(enrichResult, nGO=5) {
   if (anyDuplicated(enrichResult$Description)) {
     print(enrichResult$Description[duplicated(enrichResult$Description)])
   }
+  #calculate jaccard index of linked genes in each GO set
   jaccard=function(x, y) {
     return(length(intersect(x,y))/length(union(x,y)))
   }
-  for (i in 1:length(tempres$geneID)) {
-    jaccard_mat[1:(length(tempres$geneID)-i-1),i]=sapply(strsplit(tempres$geneID[length(tempres$geneID)-i-1], split='/'), jaccard, y=unlist(strsplit(tempres$geneID[i], split='/')))
-  }
   jaccard_mat=matrix(ncol=length(tempres$geneID), nrow=length(tempres$geneID))
-    
+  for (i in 1:length(tempres$geneID)) {
+    jaccard_mat[i, i:length(tempres$geneID)]=sapply(strsplit(tempres$geneID[i:length(tempres$geneID)], split='/'), jaccard, y=unlist(strsplit(tempres$geneID[i], split='/')))
+    jaccard_mat[i:length(tempres$geneID),i]=jaccard_mat[i, i:length(tempres$geneID)]
+  }
+  #cluater according to jaccard inex
+  d=dist(jaccard_mat, method = 'euclidian')
+  cl=hclust(d)
+  enrichResult=enrichResult[cl$order,]
+  jaccard_mat=jaccard_mat[cl$order,cl$order] 
+  plot_tab=data.frame(x=rep(1:nrow(jaccard_mat), each=nrow(jaccard_mat)), y=rep(1:nrow(jaccard_mat), nrow(jaccard_mat)), value=as.vector(jaccard_mat))
+  ggplot(plot_tab, aes(x, y, fill=value)) + geom_tile()
   plotdat <-data.frame(desc =factor(enrichResult$Description, levels=unique(enrichResult$Description[order(enrichResult$Count)])), padj =enrichResult$p.adjust,
                        count =enrichResult$Count, Gene_Ratio=sapply(enrichResult$GeneRatio, function(x) {eval(parse(text=x))}))
   xlimits <- c(min(plotdat$Gene_Ratio[1:5])- 0.5*min(plotdat$Gene_Ratio[1:5]), max(plotdat$Gene_Ratio[1:5])+0.3*max(plotdat$Gene_Ratio[1:5]))
