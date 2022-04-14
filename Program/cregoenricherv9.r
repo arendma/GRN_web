@@ -1,4 +1,4 @@
-cregoenricher <- function(samples, universe, resdir, category)  {
+cregoenricher <- function(samples, universe, category="BP", k=4, nGO=5)  {
   require(ggplot2)
   require(GO.db)
   require(topGO)
@@ -13,7 +13,6 @@ cregoenricher <- function(samples, universe, resdir, category)  {
     stop('category must be either "MF" or "BP"')
   }
   source('ggendotplotv2.r')
-  source('dircreater.r')
   ##GO enrichment
   #Import C.re. GO terms from file
   annot <- read.delim(file = "../Data/Creinhardtii_281_v5.6.annotation_info.txt",header = T,sep = "\t",row.names = 1,stringsAsFactors = F)
@@ -57,7 +56,8 @@ cregoenricher <- function(samples, universe, resdir, category)  {
     return(res)
   }
   n_anno=chckandens(mygene_go)
-  write.table(data.frame(x1=names(n_anno), x2=n_anno), file.path(resdir, paste(category,'_annotation_density.txt', sep='')), row.names = F)
+  print(paste('Ratio of genes with GO information in universe: ', round(n_anno[3], 2), sep=""))
+  #write.table(data.frame(x1=names(n_anno), x2=n_anno), file.path(resdir, paste(category,'_annotation_density.txt', sep='')), row.names = F)
   
   #create list GOter -> associated genes
   GO_mygene <- inverseList(mygene_go)
@@ -85,14 +85,14 @@ cregoenricher <- function(samples, universe, resdir, category)  {
   GO_mygene=c(GO_mygene, 'OWN:000003'=list(N2_goi$LocusID[N2_goi$LocusID %in% universe]))
   GO2NAME=c(GO2NAME, 'OWN:000003'='Nitrogen starvation response genes')
   
-  #also create an assembled dataframe of important genes to pass it for plotting
-  colnames(N2_goi)[1:2]=c('ID5_5', 'Gene')
-  goi <- rbind(N2_goi[,c('Gene', 'ID5_5')], NPQ_goi[,c('Gene', 'ID5_5')], CCM_goi[,c('Gene', 'ID5_5')])
-  #remove duplicated entries
-  for (g in unique(goi$ID5_5[duplicated(goi$ID5_5)])) {
-    dupind <- which(goi$ID5_5 %in% g)
-    goi <- goi[-dupind[2:length(dupind)],]
-  }
+  # #also create an assembled dataframe of important genes to pass it for plotting
+  # colnames(N2_goi)[1:2]=c('ID5_5', 'Gene')
+  # goi <- rbind(N2_goi[,c('Gene', 'ID5_5')], NPQ_goi[,c('Gene', 'ID5_5')], CCM_goi[,c('Gene', 'ID5_5')])
+  # #remove duplicated entries
+  # for (g in unique(goi$ID5_5[duplicated(goi$ID5_5)])) {
+  #   dupind <- which(goi$ID5_5 %in% g)
+  #   goi <- goi[-dupind[2:length(dupind)],]
+  # }
   
   
   #shorten GO term names to a max of 35 characters
@@ -119,32 +119,30 @@ cregoenricher <- function(samples, universe, resdir, category)  {
   #forloop creates a clPres list where each element [i] for a sample  is a list of enricher results of different [k]
   #clPres[[i]][[k]]= enricher result for sample i with minimum annotated gene threshold of k
   for (i in 1:length(samples)) {
-    if(class(samples[[i]])=='data.frame') {genes=samples[[i]]$id}
-    else if (class(samples[[i]])=='character') {genes=samples[[i]]}
+    if(class(samples[[i]])=='data.frame') {genes=samples[[i]]$id
+    } else if (class(samples[[i]])=='character') {genes=samples[[i]]
+    } else {stop("samples must be a list of either data frames or character vectors")}
     #Create histogram of gene counts for GO terms - this does not tak into account own gene lists
-    dircreater(file.path(resdir, 'hist/'))
+    #dircreater(file.path(resdir, 'hist/'))
     sample_go=lapply(genes,function(x){mygene_go[[x]]})
     names(sample_go)=genes
     countsSample_go=lapply(inverseList(sample_go),length)
     countsSample_go['all'] <- NULL
-    if(sum(duplicated(names(unlist(countsSample_go))))==0) {
-      logbreaks <- exp(log(max(unlist(countsSample_go)))*(1:20/20))
-      breaks <- c(0, 1:10, logbreaks[10<logbreaks])
-    }
-    else {
-      stop('duplicated GO terms detected... this is an internal error -.-')
-    }
-
-    pdf(file.path(resdir, 'hist', paste(category,'_', names(samples)[i], '_hist.pdf', sep='')))
-    hist(unlist(countsSample_go), breaks=breaks, xlim=c(0, 100), main=names(samples)[i])
-    dev.off()
+    # if(sum(duplicated(names(unlist(countsSample_go))))==0) {
+    #   logbreaks <- exp(log(max(unlist(countsSample_go)))*(1:20/20))
+    #   breaks <- c(0, 1:10, logbreaks[10<logbreaks])
+    # }else {
+    #   stop('duplicated GO terms detected... this is an internal error -.-')
+    # }
+    # 
+    # #pdf(file.path(resdir, 'hist', paste(category,'_', names(samples)[i], '_hist.pdf', sep='')))
+    # plot=hist(unlist(countsSample_go), breaks=breaks, xlim=c(0, 100), main=names(samples)[i])
+    # #dev.off()
     
     #test for enrichment using phyper
     GO_sample_idx=relist(unlist(GO_mygene) %in% genes, skeleton = GO_mygene)
     GO_sample = lapply(1:length(GO_mygene), function(x){return(GO_mygene[[x]][GO_sample_idx[[x]]])})
     names(GO_sample)=names(GO_sample_idx)
-    tempres <- list()
-    for (k in seq(2,10,2)){
       #drop GO terms linked to less or equal to k genes
       kGO_sample_idx=GO_sample_idx[sapply(GO_sample_idx,sum)>k]
       enrich.t= function(GOmember,setsize, universe){
@@ -162,62 +160,25 @@ cregoenricher <- function(samples, universe, resdir, category)  {
         pvalue=phyper(q=sum(GOmember)-1, m = length(GOmember), n=length(universe)-length(GOmember), k=setsize, lower.tail=FALSE)
         return(data.frame(GeneRatio, BgRatio, pvalue))
       }
-      test_stat=do.call(rbind, lapply(kGO_sample_idx, enrich.t, setsize=dim(samples[[i]])[1], universe=row.names(universe)))
+      if (class(samples[[i]])=="data.frame"){
+        test_stat=do.call(rbind, lapply(kGO_sample_idx, enrich.t, setsize=dim(samples[[i]])[1], universe=universe))
+      }else if (class(samples[[i]])=="character") {
+        test_stat=do.call(rbind, lapply(kGO_sample_idx, enrich.t, setsize=length(samples[[i]]), universe=universe))
+      }
       geneID=sapply(rownames(test_stat), function(x) {return(paste(GO_sample[[x]], collapse='/'))})
       Count=sapply(rownames(test_stat), function(x) {return(length(GO_sample[[x]]))})
       k_res=data.frame(ID=rownames(test_stat), Description=df_G2NAME[match(rownames(test_stat),df_G2NAME$TERM), 2], test_stat, p.adjust=p.adjust(test_stat$pvalue, method='BH'), geneID , Count)  
-      tempres[[(k/2)]] <- k_res[k_res$p.adjust<0.05,]
-      names(tempres[(k/2)])=paste('k=', as.character(k), sep='')
+      tempres <- k_res[k_res$p.adjust<0.05,]
       #only document results if significantly enriched genes are found
-      if(dim(data.frame(tempres[[(k/2)]]))[1] >0) {
-        resdir2 <- file.path(resdir,'enricher_plots',paste(category,'k_',as.character(k), sep=''))
-        dircreater(resdir2)
-        write.table(data.frame(tempres[[(k/2)]]), file.path(resdir2, paste(category, '_', names(samples)[i], '.txt', sep='')))
-        #save Pdf of results dotplot
-        plots=go_dotplot(tempres[[(k/2)]], samples[[i]], goi=goi, order='padj')
-        ggsave(file.path(resdir2, paste(category, '_',names(samples)[i], '_padjdtplot.pdf', sep='')), plot=plots[[1]], useDingbats=FALSE)
-        
-        ggsave(file.path(resdir2, paste(category, '_',names(samples)[i], '_padjscatter.pdf', sep='')), plot=plots[[2]], useDingbats=FALSE)
-        plots=go_dotplot(tempres[[(k/2)]], samples[[i]], goi=goi, order='LFC')
-        ggsave(file.path(resdir2, paste(category, '_',names(samples)[i], '_LFCplot.pdf', sep='')), plot=plots[[1]], useDingbats=FALSE)
-        
-        ggsave(file.path(resdir2, paste(category, '_',names(samples)[i], '_LFCscatter.pdf', sep='')), plot=plots[[2]], useDingbats=FALSE)
-        #pdf(file.path(resdir2, paste(category, '_',names(samples)[i], '_dtplot.pdf', sep='')))
-        #print(dotplot(tempres[[(k/2)]], showCategory=5, font.size=14))
-        #dev.off()
-        # pdf(file.path(resdir2, paste(category, '_',names(samples)[i], '_cnetnolab.pdf', sep='')))
-        # print(cnetplot(tempres[[(k/2)]], node_label=FALSE))
-        # dev.off()
-        # pdf(file.path(resdir2, paste(category, '_',names(samples)[i], '_cnet.pdf', sep='')))
-        # print(cnetplot(tempres[[(k/2)]]))
-        # dev.off()
+      if(dim(data.frame(tempres))[1] >0) {
+        goplot=ggendotplot(tempres, nGO = nGO)
+        return(list(tempres, goplot))
+      } else {
+        print('No significantly enriched GO terms found')
       }
     }
-    clPres[[i]] <- tempres 
-    names(clPres)[i] <- names(samples)[i]
-  }
-  nosigGO <- function(clPres) {
-    ##counts the amount of significant enriched terms for different K
-    if(class(clPres[[1]][[1]]) == 'data.frame') {
-      sigGO= rep(0, 5)
-      names(sigGO)=as.character(seq(2,10,2))
-      for (k in seq(2,10,2)) {
-        for (i in clPres) {
-          #print(paste(k, ': ', dim(data.frame(i[[(k/2)]])), sep=''))
-          #print(data.frame(i[[(k/2)]])$ID)
-          sigGO[(k/2)] = sigGO[(k/2)]+dim(data.frame(i[[(k/2)]]))[1]
-        }
-      }
-      return(sigGO)
-    }
-    else {
-      stop('Input is not a list of lists of enrich Results')
-    }
-  }
-  
-  sigGO <- nosigGO(clPres)
-  write.table(data.frame(k=names(sigGO), sig_GOterm=sigGO), file.path(resdir, paste(category,'_sigGOvsk.tab', sep='')), row.names = F)
-  detach('package:topGO', unload=TRUE)
-  detach('package:GO.db', unload=TRUE)
-  detach('package:ggplot2', unload=TRUE)
+
+  # detach('package:topGO', unload=TRUE)
+  # detach('package:GO.db', unload=TRUE)
+  # detach('package:ggplot2', unload=TRUE)
 }  

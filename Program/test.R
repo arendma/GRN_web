@@ -18,6 +18,8 @@ cons_madstar2=regtarget(consensus, mads_ids[2])
 phot_madstar1=regtarget(phot, mads_ids[1])
 phot_madstar2=regtarget(phot, mads_ids[2])
 
+#add arabidopsis besthits
+
 
 #extract the the top 25 coregulators of mads 1 regulator targets and plot the network
 #this will create twot plots in pdf format and 1 tsv with label legend for the nodes
@@ -28,5 +30,6 @@ cons_coreg=regTFls(consensus, cons_madstar1$target[1:25], 25, '../test')
 phot_mads2coreg=regTFs(phot, phot_madstar2$name[1])
 
 ## Analyse all targets in the consensus network for GO terms enriched
-cregoenricher(samples = cons_madstar1$target, universe = consensus$to, resdir = './', category = 'BP')
+res1=cregoenricher(samples = list(cons_madstar1$target), universe = unique(consensus$to), category = 'BP')
+res2=cregoenricher(samples = list(cons_madstar2$target), universe = unique(consensus$to), category = 'BP')
 
