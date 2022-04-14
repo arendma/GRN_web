@@ -1,3 +1,10 @@
+# I was able to deploy manually using the following commands:
+#
+#    heroku container:login
+#    heroku container:push web
+#    heroku container:release web
+#    heroku open
+
 name: heroku_deploy
 on:
   push:
