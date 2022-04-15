@@ -1,5 +1,15 @@
 cregoenricher <- function(samples, universe, category="BP", k=4, nGO=5)  {
-  require(ggplot2)
+  #Function to analyze for GO enrichment in CRE gene sample list, compared to universe. Plots a 
+  # plot with the results to the current active graphic device
+  #INPUT: 
+  # - samples: character vector of unique gene names in the sample
+  # - universe: character vector of unique gene names in the universe (all possible
+  #             gene names that coudl come up in sample)
+  # - category: (optional, default: "BP") Character that gives the type of GO terms
+  #             to be analysed. Either "BP" or "MF"
+  # - k: (optional, default: 4) the minimum number of genes in the sample set that 
+  #       have to be linked to a GO term for it to be considered in enrichment test
+  # - nGO: (optional, default: 5) the maximum number of enriched GO terms to plot 
   require(GO.db)
   require(topGO)
   require(readxl)
@@ -12,7 +22,7 @@ cregoenricher <- function(samples, universe, category="BP", k=4, nGO=5)  {
   if (!(category %in% c('MF','BP'))) {
     stop('category must be either "MF" or "BP"')
   }
-  source('ggendotplotv2.r')
+  source('web_ggendotplot.r')
   ##GO enrichment
   #Import C.re. GO terms from file
   annot <- read.delim(file = "../Data/Creinhardtii_281_v5.6.annotation_info.txt",header = T,sep = "\t",row.names = 1,stringsAsFactors = F)
@@ -171,8 +181,8 @@ cregoenricher <- function(samples, universe, category="BP", k=4, nGO=5)  {
       tempres <- k_res[k_res$p.adjust<0.05,]
       #only document results if significantly enriched genes are found
       if(dim(data.frame(tempres))[1] >0) {
-        goplot=ggendotplot(tempres, nGO = nGO)
-        return(list(tempres, goplot))
+        goplot=web_ggendotplot(tempres, nGO = nGO)
+        return(tempres)
       } else {
         print('No significantly enriched GO terms found')
       }
