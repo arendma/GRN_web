@@ -1,0 +1,60 @@
+Gene	ID5_5	transcript Regulated	unknown or postrranslational regulated	Process	Contained in BLAST_curated_JIN_TF.txt
+CHR1/ COP3	Cre14.g611300		PHOT1/2	Fast Phototaxis, Photophobic responses, High light sensing	
+CHR2/ COP4	Cre02.g085257			Slow Phototaxis, Low light sensing	
+LHCBM1	Cre01.g066917			PSII Antenna protein, inhibition of transcription 1-2h after HL induction (transient) to reduce antenna size, putative binding fo LHCSR3	
+LHCBM2	Cre12.g548400			PSII Antenna proteins, inhibition of transcription 1-2h after HL induction (transient) to reduce antenna size	
+LHCBM3	Cre04.g232104			PSII Antenna proteins, inhibition of transcription 1-2h after HL induction (transient) to reduce antenna size	
+LHCBM4	Cre06.g283950			PSII Antenna proteins, inhibition of transcription 1-2h after HL induction (transient) to reduce antenna size	
+LHCBM5	Cre03.g156900			PSII Antenna proteins, inhibition of transcription 1-2h after HL induction (transient) to reduce antenna size	
+LHCBM6	Cre06.g285250			PSII Antenna proteins, inhibition of transcription 1-2h after HL induction (transient) to reduce antenna size	
+LHCBM7	Cre12.g548950			PSII Antenna proteins, inhibition of transcription 1-2h after HL induction (transient) to reduce antenna size	
+LHCBM8	Cre06.g284250			PSII Antenna proteins, inhibition of transcription 1-2h after HL induction (transient) to reduce antenna size	
+LHCBM9	Cre06.g284200			PSII Antenna proteins, inhibition of transcription 1-2h after HL induction (transient) to reduce antenna size	
+LHCB4	Cre17.g720250			PSII Antenna proteins, inhibition of transcription 1-2h after HL induction (transient) to reduce antenna size	
+LHCB5	Cre16.g673650			PSII Antenna proteins, inhibition of transcription 1-2h after HL induction (transient) to reduce antenna size	
+LHCB7	Cre02.g110750			PSII Antenna proteins,  inhibition of transcription 1-2h after HL induction (transient) to reduce antenna size	
+LHCSR1	Cre08.g365900	(CrCO), NF-YB, NF-YC, CIA5/CCM1	UVR8, biliverdin, DET1, DDB1	qE	
+LHCSR3.1	Cre08.g367500	(CrCO), NF-YB, NF-YC	PHOT, UVR8, DET1, DDB1, CUL4, SPA1, ROC75, CAS	qE, Thylakoid membran proton gradient sensing	
+LHCSR3.2	Cre08.g367400	(CrCO), NF-YB, NF-YC	PHOT, UVR8, DET1, DDB1,  CUL4, SPA1, ROC 75, CAS	qE, Thylakoid membran proton gradient sensing	
+PSBR	Cre06.g261000			Binding of LHCSR3 into the LHC	
+VDR1	Cre09.g388060			Violaxanthin deepoxidase related put. enables qZ -> Violaxanthin to Zeaxanthine 	
+ZEP1	Cre02.g082550			disables qZ -> Zeaxanthine to Biolaxanthine	
+STT7	Cre02.g120250			Enables qT -> Serine/Threonin Kinase phosphorylating LHCBM proteins and LHCSR3	
+SOR1	Cre07.g321550			ROS sensing transcription factr	
+MBS				Zinc Finger Protein involved in singlet Oxigen reponse	
+PSBP2	Cre16.g678851			Chloroplast protein involved in singlet Oxygen response	
+SAK1	Cre17.g741300			Cytosolic Phoshoprotein, Regulator of singlet Oxygen response 	
+PHOT1	Cre03.g199000			Blue light receptor with kinase domain, regulation of choloroplast movement, phototaxsis	
+UVR8	Cre05.g230600			UV-light receptor that associates with COP1 upon UV irradiation and tranlocates to the nucleas in A.th. 	
+ELI1	Cre16.g679250			Responsible for HL growth in Cyanobacteria, Induced by UV-B	
+ELI5	Cre04.g211850			Responsible for HL growth in Cyanobacteria, Induced by UV-B	
+ELI6				Responsible for HL growth in Cyanobacteria, Induced by UV-B	
+ELI2	Cre09.g393173			Responsible for HL growth in Cyanobacteria, Induced by HL	
+ELI3	Cre06.g278213			Responsible for HL growth in Cyanobacteria, Induced by HL	
+ELI4	Cre05.g247400			Responsible for HL growth in Cyanobacteria, Induced by HL	
+ELI9				Responsible for HL growth in Cyanobacteria, Induced by HL	
+ELI10				Responsible for HL growth in Cyanobacteria, Induced by HL	
+COP1	Cre01.g002500			E3 - Ligase responsible for ELIP induction also forming a (cullin-based RING-type ubiquitin E3 ligase complex type 4 (CRL4)	
+PSBS1	Cre01.g016600	(CrCO), NF-YB, NF-YC	UVR8, DET1, DDB1, COP1, CUL4	Increases qE, associated with PSII	
+PSBS2	Cre01.g016750	(CrCO), NF-YB, NF-YC	UVR8, DET1, DDB1, COP1, CUL4	Increases qE, associated with PSII	
+CUL4	Cre12.g516500			Ring shaped putative E-3 ligase together with DDB1 and Det1 (cullin-based RING-type ubiquitin E3 ligase complex type 4 (CRL4))	
+DDB1	Cre10.g432000			Adapter protein between Cul4 E-3 ligase and Det1 or  (complex called CRL4)	
+DET1	Cre13.g571560			Subunit of CRL4 (putative Cullin based E3-ligase) responsible for substrate recognition. Enhancing LHCSR3 and 1 transcription. Proposed to act via U-ligase acitivity and Independently	
+Cr_UBC17	Cre06.g292800			Orthologue of mamallian E2 enzyme UBE2E that is reported to enhance CRL4 activity there	
+SPA1	Cre13.g602700			Scaffold protein with Ser/Threonin kinase domain forms a heterotetramer for substrate recognition in A.th. (CRL4)	
+CRCO/ Constans	Cre06.g278159			Putative Transcription factro regulating NPQ genes target of SPA/COP1 substrate recognition complex.	x
+ROC75	Cre02.g083750		Cry, Unkown red light receptor	Circadian Transcription factor responsible regulating LHCSR3 transcription. Attenuating(Dämpfen)	x
+pCry	Cre06.g295200			plant likeCryptochrome Blue light receptor postively regulating ROC75 transcriptions	
+aCry	Cre06.g278251			animal like Cry	
+NF-YB	Cre02.g079200			Transcription factor complexing with CONSTANS to bind phtoprotective genes -> enhancing transcription	x
+NF-YC	Cre12.g556400			Transcription factor complexing with CONSTANS to bind phtoprotective genes -> enhancing transcription	x
+CIA5/CCM1	Cre02.g096300			Master Regulator of low CO2 response	
+CAS	Cre12.g497300			Thylakoid Ca2+ binding Protein, 	
+COP5	Cre02.g074150				
+COP6	Cre11.g467678				
+COP7	Cre01.g038050				
+COP8	Cre07.g329900				
+COP9	Cre15.g643503				
+COP10	Cre17.g733150				
+CRY-DASH1	Cre02.g078939				
+PHR5/ CRY-DASH2	Cre01.g030650				

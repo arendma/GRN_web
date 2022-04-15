@@ -1,6 +1,6 @@
 #setup script installing nescessary packages if not present
-packs = c("igraph", "shiny")
-bcpacks = c()
+packs = c("BiocManager", "igraph", "shiny", "readxl")
+bcpacks = c("GO.db", "topGO")
 
 for (pack in packs) {
   if(!(requireNamespace(pack, quietly=TRUE))) {

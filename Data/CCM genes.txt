@@ -1,0 +1,79 @@
+Gene	ID5_5	transcript Regulated	unknown or postrranslational regulated	Process	Contained in BLAST_curated_JIN_TF.txt
+HLA3	Cre02.g097800	LCR1	CAS	ABC Transporter (HCO3-)	
+LCI1	Cre03.g162800	LCR1		no homologs in other species, PM -Protein (uknown substragte), Used as CCM bait protein in Mackinder et al. 	
+LCIA	Cre06.g309000		CAS	formate/nitrite transporter family, localized at the chloroplast envelope (HCO3-), Used as CCM bait protein in Mackinder et al. 	
+CAH3	Cre09.g415700		STT7	carbonic anhydrase, ?-type, thylakoid lumen, CO2 responsive, interacts with STT7(kinase involved in LHC2 phosphorilation)	
+LCIB	Cre10.g452800			put. carbonic anhydrase, proposed to prevent CO2 leakage from the stroma in a complex with LCIC	
+LCR1	Cre09.g399552	CIA5/CCM		Myeloid oncogene (Myb-) like TR	x
+CCP1	Cre04.g223300			chlroplast envelop Protein, Used as CCM bait protein in Mackinder et al. 	
+CAH1	Cre04.g223100	LCR1		carbonic anhydrase,  ?-type, periplasm, CO2 responsive	
+CCP2	Cre04.g222750			Closely related to CCP1 (carbonic anhydrase?)	
+LCID	Cre04.g222800			Very similar to LCIB (carbonic anhydrase?)	
+CIA5/ CCM1	Cre02.g096300			TF regulating CO2 response,  not binding DNA itself	added
+CAH2	Cre04.g223050			Carbonic anhydrase, ?-type, periplasm, Used as CCM bait protein in Mackinder et al. 	
+CAH4	Cre05.g248400			Carbonic anhydrase, ?-type	
+CAH5	Cre05.g248450			Carbonic anhydrase,  ?-type, mitochondrion, Used as CCM bait protein in Mackinder et al. 	
+CAH6	Cre12.g485050			Carbonic anhydrase,  ?-type, stroma	
+CAH7	Cre13.g607350			Carbonic anhydrase 7, ?-type	
+CAH8	Cre09.g405750			Carbonic anhydrase 8, ?-type	
+CAH9	Cre05.g243150			Carbonic anhydrase 9,  ?-type	
+CAH10				Putative carbonic anhydrase, ?-type, bacterial transferase hexapeptide repeat, not CO2 responsive coupled with complex one of mitochondrikal electron transfer chain	
+CAH11				Putative carbonic anhydrase, ?-type, bacterial transferase hexapeptide repeat,  mitochondrion, ot CO2 responsive coupled with complex one of mitochondrikal electron transfer	
+CAH12				Putative carbonic anhydrase, ?-type, bacterial transferase hexapeptide repeat, ot CO2 responsive coupled with complex one of mitochondrikal electron transfer	
+Cre02.g103800	Cre02.g103800			putative Rap like transcription factor (only weak evidence from Brugemann et al. (2012)	
+RHP1	Cre06.g284100			put. PM Co2 channel	
+RHP2	Cre06.g284150			similar to RHP1	
+LCIC	Cre06.g307500			soluble chloroplast protein, predicted to be involved in Ci transport, proposed to prevent CO2 leakage from the stroma in a complex with LCIB, Used as CCM bait protein in Mackinder et al. 	
+LCIE	Cre04.g223250			soluble chloroplast protein, predicted to be involved in Ci transport	
+CAS	Cre12.g497300			Thylakoid Ca2+ binding Protein, 	
+STT7	Cre02.g120250			Enables qT -> Serine/Threonin Kinase phosphorylating LHCBM proteins and LHCSR3	
+ULP1	Cre01.g051500			Uncharacterized thylakoid lumenal polypeptide, Used as CCM bait protein in Mackinder et al. 	
+Cre01.g054850	Cre01.g054850			Used as CCM bait protein in Mackinder et al. 	
+RBCS1	Cre02.g120100			Rubisco small subunit 1, Used as CCM bait protein in Mackinder et al. 	
+RBCS2	Cre02.g120150			Rubisco small subunit 2, Used as CCM bait protein in Mackinder et al. 	
+SMM7	Cre03.g151650			Used as CCM bait protein in Mackinder et al. 	
+LCI24	Cre03.g179800			LCO2 inducable membrane protein, Used as CCM bait protein in Mackinder et al. 	
+LCI34	Cre03.g191250			LCo2 inducable proteinUsed as CCM bait protein in Mackinder et al. 	
+RCA1	Cre04.g229300			Rubisco activase, Used as CCM bait protein in Mackinder et al. 	
+HST1 	Cre06.g283750			Homogentisate solanesyltransferase, Used as CCM bait protein in Mackinder et al. 	
+HPR1	Cre06.g295450			Hydroxypyruvate reductase, Used as CCM bait protein in Mackinder et al. 	
+PSAH	Cre07.g330250			Subunit H of Photosystem 1, Used as CCM bait protein in Mackinder et al. 	
+PSBP4	Cre08.g362900			Lumenal PsbP-like protein, Used as CCM bait protein in Mackinder et al. 	
+PSBQ	Cre08.g372450			Oxygen-evolving enhancer protein 3, Used as CCM bait protein in Mackinder et al. 	
+LCI9	Cre09.g394473			Low CO2 inducible Protein, Used as CCM bait protein in Mackinder et al. 	
+EPYC/ LCI5	Cre10.g436550			Low CO2 inducible Protein, Used as CCM bait protein in Mackinder et al. 	
+SBE3	Cre10.g444700			Starch branching enzyme,Used as CCM bait protein in Mackinder et al. 	
+LCI30	Cre12.g507300			Low CO2 inducible Protein, Used as CCM bait protein in Mackinder et al. 	
+PSBP3	Cre12.g509050			OEE2-like protein of thylakoid lumen,  Used as CCM bait protein in Mackinder et al. 	
+TEF9	Cre12.g519300			Predicted Protein,  Used as CCM bait protein in Mackinder et al. 	
+PSAG	Cre12.g560950			Photosystem I reaction center subunit V,  Used as CCM bait protein in Mackinder et al. 	
+ACP2	Cre13.g577100			Acyl carrier protein,  Used as CCM bait protein in Mackinder et al. 	
+Fd/ FDX1	Cre14.g626700			Ferredoxin,  Used as CCM bait protein in Mackinder et al. 	
+CYC6	Cre16.g651050			Cytochrome c6, Used as CCM bait protein in Mackinder et al. 	
+Cre16.g652800	Cre16.g652800			Used as CCM bait protein in Mackinder et al. 	
+Cre16.g662600	Cre16.g662600			Used as CCM bait protein in Mackinder et al. 	
+LCI11	Cre16.g663450			Low CO2 incucible membrane Protein, Used as CCM bait protein in Mackinder et al. 	
+STA2	Cre17.g721500			Granule-bound starch synthase I, Used as CCM bait protein in Mackinder et al. 	
+PSAK	Cre17.g724300			Photosystem I reactiono center subunit psaK,Used as CCM bait protein in Mackinder et al. 	
+Cre13.g573250	Cre13.g573250			Found prey proteins in the pyrenoid in Mackinder et al. 	
+Cre09.g416850	Cre09.g416850			Found prey proteins in the pyrenoid in Mackinder et al. 	
+Cre16.g663150	Cre16.g663150			Found prey proteins in the pyrenoid in Mackinder et al. 	
+IGS1	Cre13.g575800			Found prey proteins in the pyrenoid in Mackinder et al. 	
+Cre01.g054700	Cre01.g054700			Found prey proteins in the pyrenoid in Mackinder et al. 	
+Cre06.g271850	Cre06.g271850			Found prey proteins in the pyrenoid in Mackinder et al. 	
+Cre06.g261750	Cre06.g261750			Found prey proteins in the pyrenoid in Mackinder et al. 	
+Cre16.g655050	Cre16.g655050			Found prey proteins in the pyrenoid in Mackinder et al. 	
+Cre02.g088950	Cre02.g088950			Found prey proteins in the pyrenoid in Mackinder et al. 	
+SBE4	Cre08.g373450			Found prey proteins in the pyrenoid in Mackinder et al. 	
+Cre16.g668200	Cre16.g668200			Found prey proteins in the pyrenoid in Mackinder et al. 	
+OPR36	Cre09.g386200			Found prey proteins in the pyrenoid in Mackinder et al. 	
+Cre06.g249750	Cre06.g249750			Found prey proteins in the pyrenoid in Mackinder et al. 	
+Cre16.g681238	Cre16.g681238			Found prey proteins in the pyrenoid in Mackinder et al. 	
+CGLD10	Cre06.g273050			Found prey proteins in the pyrenoid in Mackinder et al. 	
+SBE1	Cre06.g289850			Found prey proteins in the pyrenoid in Mackinder et al. 	
+TGL18	Cre12.g530950			Found prey proteins in the pyrenoid in Mackinder et al. 	
+Cre10.g452250	Cre10.g452250			Found prey proteins in the pyrenoid in Mackinder et al. 	
+Cre09.g394621	Cre09.g394621			Found prey proteins in the pyrenoid in Mackinder et al. 	
+KIN4-2	Cre03.g202000			Found prey proteins in the pyrenoid in Mackinder et al. 	
+FTT2	Cre06.g257500			Found prey proteins in the pyrenoid in Mackinder et al. 	
+FTT1 	Cre12.g559250			Found prey proteins in the pyrenoid in Mackinder et al. 	
