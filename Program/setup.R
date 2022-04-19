@@ -1,16 +1,24 @@
 #setup script installing nescessary packages if not present
-packs = c("BiocManager", "igraph", "shiny", "readxl", "ggplot2")
-bcpacks = c("GO.db", "topGO")
+packages = c("graph", "igraph", "shiny", "readxl", "ggplot2", "remotes")
+bioc_packages = c("GO.db", "topGO")
 
-for (pack in packs) {
-  if(!(requireNamespace(pack, quietly=TRUE))) {
-    install.packages(pack)
+for (pkg in packages) {
+  if(!(requireNamespace(pkg, quietly=TRUE))) {
+    install.packages(pkg)
   }
 }
 
-for (bcpack in bcpacks) {
-  if(!(requireNamespace(bcpack, quietly=TRUE))) {
-    library(BiocManager)
-    BiocManager::install(bcpack)
+# Install bioconductor packages as binary packages
+# instead of compiling them locally. This should be
+# much faster.
+if(!require('AnVIL')) {
+  remotes::install_github("Bioconductor/AnVIL")
+  library('AnVIL')
+}
+
+for (bioc_pkg in bioc_packages) {
+  if(!(requireNamespace(bioc_pkg, quietly=TRUE))) {
+    library(AnVIL)
+    AnVIL::install(bioc_pkg)
   }
 }
