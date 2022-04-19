@@ -9,6 +9,8 @@ RUN apt-get -y install software-properties-common && \
     apt-get update && \
     apt-get install r-base-core -y
 
+RUN apt-get install -y libssl-dev libcurl4-openssl-dev
+
 # We'll copy setup.r and run it before copying all other files,
 # so that changing other R files doesn't cause unnecessary reinstalls
 # when rebuilding the Docker container.

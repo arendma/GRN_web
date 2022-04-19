@@ -1,5 +1,5 @@
 #setup script installing nescessary packages if not present
-packs = c("BiocManager", "igraph", "shiny", "readxl")
+packs = c("BiocManager", "igraph", "shiny", "readxl", "ggplot2")
 bcpacks = c("GO.db", "topGO")
 
 for (pack in packs) {
