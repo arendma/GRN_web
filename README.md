@@ -10,6 +10,6 @@ the publication [Widening the landscape of transcriptional regulation of algal p
 
 ## Usage example
 
-The script `Program/test.r` contains an example of the functions and how they are used.
+The script `Program/test.R` contains an example of the functions and how they are used.
 
 
