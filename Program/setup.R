@@ -13,7 +13,6 @@ for (pkg in packages) {
 # much faster.
 if(!require('AnVIL')) {
   remotes::install_github("Bioconductor/AnVIL")
-  library('AnVIL')
 }
 
 for (bioc_pkg in bioc_packages) {
