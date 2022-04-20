@@ -1,5 +1,5 @@
 #setup script installing nescessary packages if not present
-packages = c("graph", "igraph", "shiny", "readxl", "ggplot2", "remotes")
+packages = c("graph", "igraph", "shiny", "readxl", "writexl", "ggplot2", "remotes")
 bioc_packages = c("GO.db", "topGO")
 
 for (pkg in packages) {
@@ -13,7 +13,6 @@ for (pkg in packages) {
 # much faster.
 if(!require('AnVIL')) {
   remotes::install_github("Bioconductor/AnVIL")
-  library('AnVIL')
 }
 
 for (bioc_pkg in bioc_packages) {
