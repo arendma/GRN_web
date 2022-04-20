@@ -31,18 +31,17 @@ ui <- fluidPage(
           label = "Number of targets",
           min = 1,
           max = 100,
-          value = 25),
-
-        # button for downloading output tables
-        downloadButton("downloadData", "Download output as a file")
+          value = 10)
       ),
       
       # main panel for outputs on the right
       mainPanel(
         h4("Top targets in consensus network:"),
+        downloadButton("downloadConsensusTargets", "Download table"),
         tableOutput(outputId = "consensusTargets"),
         
         h4("Top targets in PHOT network:"),
+        downloadButton("downloadPhotTargets", "Download table"),
         tableOutput(outputId = "photTargets")
       )
     )
@@ -60,6 +59,8 @@ server <- function(input, output) {
   targetsTableFormat = c('s', 's', 's', 'g')
   targetsTableNumDigits = 5
 
+  # show consensus targets table and allow file download
+
   consensusTargets <- reactive({
     regtarget(consensus, input$geneID, input$num_top_targets)
   })
@@ -71,16 +72,32 @@ server <- function(input, output) {
   output$consensusTargets = renderTable({
     consensusTargets()
   }, digits=targetsTableNumDigits, display=targetsTableFormat)
-  
-  output$photTargets = renderTable({
-    regtarget(phot, input$geneID, input$num_top_targets)
-  }, digits=targetsTableNumDigits, display=targetsTableFormat)
 
-  # Downloadable csv of selected dataset ----
-  output$downloadData <- downloadHandler(
+  output$downloadConsensusTargets <- downloadHandler(
     filename = consensusTargetsFilename,
     content = function(file) {
       write.csv(consensusTargets(), file, row.names = FALSE)
+    }
+  )
+
+  # show phot targets table and allow file download
+
+  photTargets <- reactive({
+    regtarget(phot, input$geneID, input$num_top_targets)
+  })
+
+  photTargetsFilename <- reactive({
+    paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_targets_in_phot_network", ".csv", sep = "")
+  })
+
+  output$photTargets = renderTable({
+    photTargets()
+  }, digits=targetsTableNumDigits, display=targetsTableFormat)
+
+  output$downloadPhotTargets <- downloadHandler(
+    filename = photTargetsFilename,
+    content = function(file) {
+      write.csv(photTargets(), file, row.names = FALSE)
     }
   )
 
