@@ -63,6 +63,10 @@ server <- function(input, output) {
   consensusTargets <- reactive({
     regtarget(consensus, input$geneID, input$num_top_targets)
   })
+  
+  consensusTargetsFilename <- reactive({
+    paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_targets_in_consensus_network", ".csv", sep = "")
+  })
 
   output$consensusTargets = renderTable({
     consensusTargets()
@@ -74,9 +78,7 @@ server <- function(input, output) {
 
   # Downloadable csv of selected dataset ----
   output$downloadData <- downloadHandler(
-    filename = function() {
-      paste(consensusTargets(), ".csv", sep = "")
-    },
+    filename = consensusTargetsFilename,
     content = function(file) {
       write.csv(consensusTargets(), file, row.names = FALSE)
     }
