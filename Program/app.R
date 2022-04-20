@@ -2,6 +2,8 @@ library(shiny)
 options(shiny.host = '0.0.0.0')
 options(shiny.port = 8181)
 
+library(writexl)
+
 source('netwk_anav2.R')
 
 # consensus network
@@ -66,7 +68,7 @@ server <- function(input, output) {
   })
   
   consensusTargetsFilename <- reactive({
-    paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_targets_in_consensus_network", ".csv", sep = "")
+    paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_targets_in_consensus_network", ".xlsx", sep = "")
   })
 
   output$consensusTargets = renderTable({
@@ -76,7 +78,7 @@ server <- function(input, output) {
   output$downloadConsensusTargets <- downloadHandler(
     filename = consensusTargetsFilename,
     content = function(file) {
-      write.csv(consensusTargets(), file, row.names = FALSE)
+      write_xlsx(consensusTargets(), file)
     }
   )
 
@@ -87,7 +89,7 @@ server <- function(input, output) {
   })
 
   photTargetsFilename <- reactive({
-    paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_targets_in_phot_network", ".csv", sep = "")
+    paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_targets_in_phot_network", ".xlsx", sep = "")
   })
 
   output$photTargets = renderTable({
@@ -97,7 +99,7 @@ server <- function(input, output) {
   output$downloadPhotTargets <- downloadHandler(
     filename = photTargetsFilename,
     content = function(file) {
-      write.csv(photTargets(), file, row.names = FALSE)
+      write_xlsx(photTargets(), file)
     }
   )
 
