@@ -25,21 +25,25 @@ ui <- fluidPage(
           inputId = "geneID",
           label = "Select gene ID",
           choices = c("Choose one" = "", GeneIds)),
+
         sliderInput(
           inputId = "num_top_targets",
           label = "Number of targets",
           min = 1,
           max = 100,
-          value = 25)
+          value = 25),
+
+        # button for downloading output tables
+        downloadButton("downloadData", "Download output as a file")
       ),
       
       # main panel for outputs on the right
       mainPanel(
         h4("Top targets in consensus network:"),
-        tableOutput(outputId = "topConsensusTargets"),
+        tableOutput(outputId = "consensusTargets"),
         
         h4("Top targets in PHOT network:"),
-        tableOutput(outputId = "topPhotTargets")
+        tableOutput(outputId = "photTargets")
       )
     )
 )
@@ -56,13 +60,28 @@ server <- function(input, output) {
   targetsTableFormat = c('s', 's', 's', 'g')
   targetsTableNumDigits = 5
 
-  output$topConsensusTargets = renderTable({
+  consensusTargets <- reactive({
     regtarget(consensus, input$geneID, input$num_top_targets)
+  })
+
+  output$consensusTargets = renderTable({
+    consensusTargets()
   }, digits=targetsTableNumDigits, display=targetsTableFormat)
   
-  output$topPhotTargets = renderTable({
+  output$photTargets = renderTable({
     regtarget(phot, input$geneID, input$num_top_targets)
   }, digits=targetsTableNumDigits, display=targetsTableFormat)
+
+  # Downloadable csv of selected dataset ----
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste(consensusTargets(), ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(consensusTargets(), file, row.names = FALSE)
+    }
+  )
+
 }
 
 # Run the shiny app with the options given above
