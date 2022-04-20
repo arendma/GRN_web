@@ -14,3 +14,13 @@ WORKDIR /opt/grn-web/Program
 
 # open port used by our shiny app (defined in app.R)
 EXPOSE 8181
+
+# set non-root (Heroku requires this)                   
+RUN useradd shiny_user
+# make all app files readable, gives rwe permisssion
+RUN chown -R shiny_user:shiny_user /opt/grn-web
+USER shiny_user
+
+# run app on container start (use heroku port variable for deployment)
+CMD ["R", "-e", "shiny::runApp('/opt/grn-web/Program', host = '0.0.0.0', port = as.numeric(Sys.getenv('PORT')))"]
+
