@@ -3,7 +3,7 @@ FROM bioconductor/bioconductor_docker:RELEASE_3_14
 # set non-root (Heroku requires this)
 RUN useradd shiny_user
 # make all app files readable, gives rwe permisssion
-RUN chown -R shiny_user:shiny_user /opt
+RUN mkdir /opt/grn-web && chown -R shiny_user:shiny_user /opt/grn-web
 RUN chown -R shiny_user:shiny_user /usr/local/lib/R/site-library
 USER shiny_user
 
