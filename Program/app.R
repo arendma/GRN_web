@@ -4,12 +4,12 @@ library(writexl)
 source('netwk_anav2.R')
 
 # consensus network
-consensus = read.delim('../Data/consensus0.1.tab', stringsAsFactors = FALSE)
+consensusNetwork = read.delim('../Data/consensus0.1.tab', stringsAsFactors = FALSE)
 # PHOT network
-phot = read.delim('../Data/gen3x0.1consens.tab', stringsAsFactors = FALSE)
+photNetwork = read.delim('../Data/gen3x0.1consens.tab', stringsAsFactors = FALSE)
 
 # TODO: use all gene IDs (consensus and phot network, source and target nodes)
-GeneIds = as.list(unique(consensus$from))
+GeneIds = as.list(unique(consensusNetwork$from))
 
 ui <- fluidPage(
     # app title
@@ -41,7 +41,10 @@ ui <- fluidPage(
         
         h4("Top targets in PHOT network:"),
         downloadButton("downloadPhotTargets", "Download table"),
-        tableOutput(outputId = "photTargets")
+        tableOutput(outputId = "photTargets"),
+        
+        h4("Top coregulators in consensus network:"),
+        tableOutput(outputId = "consensusCoregulators")
       )
     )
 )
@@ -61,7 +64,7 @@ server <- function(input, output) {
   # show consensus targets table and allow file download
 
   consensusTargets <- reactive({
-    regtarget(consensus, input$geneID, input$num_top_targets)
+    regtarget(consensusNetwork, input$geneID, input$num_top_targets)
   })
   
   consensusTargetsFilename <- reactive({
@@ -82,7 +85,7 @@ server <- function(input, output) {
   # show phot targets table and allow file download
 
   photTargets <- reactive({
-    regtarget(phot, input$geneID, input$num_top_targets)
+    regtarget(photNetwork, input$geneID, input$num_top_targets)
   })
 
   photTargetsFilename <- reactive({
@@ -99,6 +102,20 @@ server <- function(input, output) {
       write_xlsx(photTargets(), file)
     }
   )
+
+
+  # Extract the top N coregulators from the consensus network regulator targets
+  # and plot the network.
+  # This will create twot plots in pdf format and 1 tsv with label legend for the nodes
+  # in the parent directory.
+  consensusCoregulators <- reactive({
+    regTFls(consensusNetwork, consensusTargets()$target[1:input$num_top_targets], input$num_top_targets, file=NULL)
+  })
+
+  output$consensusCoregulators = renderTable({
+    consensusCoregulators()
+  }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 'g', 'g'))
+
 
 }
 
