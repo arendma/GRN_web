@@ -23,7 +23,7 @@ ui <- fluidPage(
         selectInput(
           inputId = "geneID",
           label = "Select gene ID",
-          choices = c("Choose one" = "", GeneIds)),
+          choices = c("Cre11.g467577", GeneIds)),
 
         sliderInput(
           inputId = "num_top_targets",
