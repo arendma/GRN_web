@@ -36,15 +36,15 @@ ui <- fluidPage(
       # main panel for outputs on the right
       mainPanel(
         h4("Top targets in consensus network:"),
-        downloadButton("downloadConsensusTargets", "Download table"),
-        tableOutput(outputId = "consensusTargets"),
+        downloadButton("downloadconsTargets", "Download table"),
+        tableOutput(outputId = "consTargets"),
         
         h4("Top targets in PHOT network:"),
         downloadButton("downloadPhotTargets", "Download table"),
         tableOutput(outputId = "photTargets"),
         
         h4("Top coregulators in consensus network:"),
-        downloadButton("downloadconsCoregs", "Download table"),
+        downloadButton("downloadConsCoregs", "Download table"),
         tableOutput(outputId = "consCoregs")
       )
     )
@@ -64,22 +64,22 @@ server <- function(input, output) {
 
   # show consensus targets table and allow file download
 
-  consensusTargets <- reactive({
+  consTargets <- reactive({
     regtarget(consensusNetwork, input$geneID, input$num_top_targets)
   })
   
-  consensusTargetsFilename <- reactive({
+  consTargetsFname <- reactive({
     paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_targets_in_consensus_network", ".xlsx", sep = "")
   })
 
-  output$consensusTargets = renderTable({
-    consensusTargets()
+  output$consTargets = renderTable({
+    consTargets()
   }, digits=targetsTableNumDigits, display=targetsTableFormat)
 
-  output$downloadConsensusTargets <- downloadHandler(
-    filename = consensusTargetsFilename,
+  output$downloadconsTargets <- downloadHandler(
+    filename = consTargetsFname,
     content = function(file) {
-      write_xlsx(consensusTargets(), file)
+      write_xlsx(consTargets(), file)
     }
   )
 
@@ -89,7 +89,7 @@ server <- function(input, output) {
     regtarget(photNetwork, input$geneID, input$num_top_targets)
   })
 
-  photTargetsFilename <- reactive({
+  photTargetsFname <- reactive({
     paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_targets_in_phot_network", ".xlsx", sep = "")
   })
 
@@ -98,7 +98,7 @@ server <- function(input, output) {
   }, digits=targetsTableNumDigits, display=targetsTableFormat)
 
   output$downloadPhotTargets <- downloadHandler(
-    filename = photTargetsFilename,
+    filename = photTargetsFname,
     content = function(file) {
       write_xlsx(photTargets(), file)
     }
@@ -110,19 +110,19 @@ server <- function(input, output) {
   # This will create twot plots in pdf format and 1 tsv with label legend for the nodes
   # in the parent directory.
   consCoregs <- reactive({
-    regTFls(consensusNetwork, consensusTargets()$target[1:input$num_top_targets], input$num_top_targets, file=NULL)
+    regTFls(consensusNetwork, consTargets()$target[1:input$num_top_targets], input$num_top_targets, file=NULL)
   })
 
   output$consCoregs = renderTable({
     consCoregs()
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 'g', 'g'))
 
-  consCoregFilename <- reactive({
+  consCoregFname <- reactive({
     paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_coregulators_in_consensus_network", ".xlsx", sep = "")
   })
 
-  output$downloadconsCoregs <- downloadHandler(
-    filename = consCoregFilename,
+  output$downloadConsCoregs <- downloadHandler(
+    filename = consCoregFname,
     content = function(file) {
       write_xlsx(consCoregs(), file)
     }
