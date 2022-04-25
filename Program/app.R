@@ -44,7 +44,8 @@ ui <- fluidPage(
         tableOutput(outputId = "photTargets"),
         
         h4("Top coregulators in consensus network:"),
-        tableOutput(outputId = "consensusCoregulators")
+        downloadButton("downloadconsCoregs", "Download table"),
+        tableOutput(outputId = "consCoregs")
       )
     )
 )
@@ -108,15 +109,24 @@ server <- function(input, output) {
   # and plot the network.
   # This will create twot plots in pdf format and 1 tsv with label legend for the nodes
   # in the parent directory.
-  consensusCoregulators <- reactive({
+  consCoregs <- reactive({
     regTFls(consensusNetwork, consensusTargets()$target[1:input$num_top_targets], input$num_top_targets, file=NULL)
   })
 
-  output$consensusCoregulators = renderTable({
-    consensusCoregulators()
+  output$consCoregs = renderTable({
+    consCoregs()
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 'g', 'g'))
 
+  consCoregFilename <- reactive({
+    paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_coregulators_in_consensus_network", ".xlsx", sep = "")
+  })
 
+  output$downloadconsCoregs <- downloadHandler(
+    filename = consCoregFilename,
+    content = function(file) {
+      write_xlsx(consCoregs(), file)
+    }
+  )
 }
 
 # Run the shiny app with the options given above
