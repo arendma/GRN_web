@@ -2,6 +2,7 @@ library(shiny)
 library(writexl)
 
 source('netwk_anav2.R')
+source('cregoenricherv9.r')
 
 # consensus network
 consensusNetwork = read.delim('../Data/consensus0.1.tab', stringsAsFactors = FALSE)
@@ -47,11 +48,14 @@ ui <- fluidPage(
         h4("Top coregulators in consensus network:"),
         downloadButton("downloadConsCoregs", "Download table"),
         tableOutput(outputId = "consCoregs"),
-        
 
         h4("Coregulators of the highest ranked target gene in PHOT network:"),
         downloadButton("downloadPhotCoregs", "Download table"),
-        tableOutput(outputId = "photCoregsOfHighestRankTarget")
+        tableOutput(outputId = "photCoregsOfHighestRankTarget"),
+
+        h4("Analyse all targets in the consensus network for GO terms enriched:"),
+        downloadButton("downloadEnrichedGoTerms", "Download table"),
+        tableOutput(outputId = "enrichedGoTerms")
       )
     )
 )
@@ -144,7 +148,6 @@ server <- function(input, output) {
     photCoregsOfHighestRankTarget()
   }, digits=targetsTableNumDigits, display=targetsTableFormat)
 
-  # downloadPhotCoregs
   photCoregsFname <- reactive({
     paste("gene_id_", input$geneID, "_coregulators_of_highest_ranked_target_gene_in_phot_network", ".xlsx", sep = "")
   })
@@ -155,6 +158,29 @@ server <- function(input, output) {
       write_xlsx(photCoregsOfHighestRankTarget(), file)
     }
   )
+
+## Analyse all targets in the consensus network for GO terms enriched
+# res1=cregoenricher(samples = list(cons_madstar1$target), universe = unique(consensus$to), category = 'BP')
+
+  enrichedGoTerms <- reactive({
+    cregoenricher(samples = list(consTargets()$target), universe = unique(consensusNetwork$to), category = 'BP')
+  })
+
+  output$enrichedGoTerms = renderTable({
+    enrichedGoTerms()
+  }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 's', 'g', 'g', 's'))
+
+  enrichedGoTermsFname <- reactive({
+    paste("gene_id_", input$geneID, "_targets_in_consensus_network_with_enriched_go_terms", ".xlsx", sep = "")
+  })
+
+  output$downloadEnrichedGoTerms <- downloadHandler(
+    filename = enrichedGoTermsFname,
+    content = function(file) {
+      write_xlsx(enrichedGoTerms(), file)
+    }
+  )
+
 
 }
 
