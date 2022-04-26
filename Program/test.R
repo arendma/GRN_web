@@ -29,6 +29,9 @@ cons_coreg=regTFls(consensus, cons_madstar1$target[1:25], 25, '../test')
 #find all coregulators for the single highest ranked target genen of mads2 in the phot network
 phot_mads2coreg=regTFs(phot, phot_madstar2$name[1])
 
+# avoid error "cannot open file 'Rplots.pdf'" in Docker container
+pdf(NULL)
+
 ## Analyse all targets in the consensus network for GO terms enriched
 res1=cregoenricher(samples = list(cons_madstar1$target), universe = unique(consensus$to), category = 'BP')
 res2=cregoenricher(samples = list(cons_madstar2$target), universe = unique(consensus$to), category = 'BP')

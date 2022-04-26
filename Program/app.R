@@ -4,12 +4,12 @@ library(writexl)
 source('netwk_anav2.R')
 
 # consensus network
-consensus = read.delim('../Data/consensus0.1.tab', stringsAsFactors = FALSE)
+consensusNetwork = read.delim('../Data/consensus0.1.tab', stringsAsFactors = FALSE)
 # PHOT network
-phot = read.delim('../Data/gen3x0.1consens.tab', stringsAsFactors = FALSE)
+photNetwork = read.delim('../Data/gen3x0.1consens.tab', stringsAsFactors = FALSE)
 
 # TODO: use all gene IDs (consensus and phot network, source and target nodes)
-GeneIds = as.list(unique(consensus$from))
+GeneIds = as.list(unique(consensusNetwork$from))
 
 ui <- fluidPage(
     # app title
@@ -23,7 +23,7 @@ ui <- fluidPage(
         selectInput(
           inputId = "geneID",
           label = "Select gene ID",
-          choices = c("Choose one" = "", GeneIds)),
+          choices = c("Cre11.g467577", GeneIds)),
 
         sliderInput(
           inputId = "num_top_targets",
@@ -36,12 +36,16 @@ ui <- fluidPage(
       # main panel for outputs on the right
       mainPanel(
         h4("Top targets in consensus network:"),
-        downloadButton("downloadConsensusTargets", "Download table"),
-        tableOutput(outputId = "consensusTargets"),
+        downloadButton("downloadconsTargets", "Download table"),
+        tableOutput(outputId = "consTargets"),
         
         h4("Top targets in PHOT network:"),
         downloadButton("downloadPhotTargets", "Download table"),
-        tableOutput(outputId = "photTargets")
+        tableOutput(outputId = "photTargets"),
+        
+        h4("Top coregulators in consensus network:"),
+        downloadButton("downloadConsCoregs", "Download table"),
+        tableOutput(outputId = "consCoregs")
       )
     )
 )
@@ -60,32 +64,32 @@ server <- function(input, output) {
 
   # show consensus targets table and allow file download
 
-  consensusTargets <- reactive({
-    regtarget(consensus, input$geneID, input$num_top_targets)
+  consTargets <- reactive({
+    regtarget(consensusNetwork, input$geneID, input$num_top_targets)
   })
   
-  consensusTargetsFilename <- reactive({
+  consTargetsFname <- reactive({
     paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_targets_in_consensus_network", ".xlsx", sep = "")
   })
 
-  output$consensusTargets = renderTable({
-    consensusTargets()
+  output$consTargets = renderTable({
+    consTargets()
   }, digits=targetsTableNumDigits, display=targetsTableFormat)
 
-  output$downloadConsensusTargets <- downloadHandler(
-    filename = consensusTargetsFilename,
+  output$downloadconsTargets <- downloadHandler(
+    filename = consTargetsFname,
     content = function(file) {
-      write_xlsx(consensusTargets(), file)
+      write_xlsx(consTargets(), file)
     }
   )
 
   # show phot targets table and allow file download
 
   photTargets <- reactive({
-    regtarget(phot, input$geneID, input$num_top_targets)
+    regtarget(photNetwork, input$geneID, input$num_top_targets)
   })
 
-  photTargetsFilename <- reactive({
+  photTargetsFname <- reactive({
     paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_targets_in_phot_network", ".xlsx", sep = "")
   })
 
@@ -94,12 +98,35 @@ server <- function(input, output) {
   }, digits=targetsTableNumDigits, display=targetsTableFormat)
 
   output$downloadPhotTargets <- downloadHandler(
-    filename = photTargetsFilename,
+    filename = photTargetsFname,
     content = function(file) {
       write_xlsx(photTargets(), file)
     }
   )
 
+
+  # Extract the top N coregulators from the consensus network regulator targets
+  # and plot the network.
+  # This will create twot plots in pdf format and 1 tsv with label legend for the nodes
+  # in the parent directory.
+  consCoregs <- reactive({
+    regTFls(consensusNetwork, consTargets()$target[1:input$num_top_targets], input$num_top_targets, file=NULL)
+  })
+
+  output$consCoregs = renderTable({
+    consCoregs()
+  }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 'g', 'g'))
+
+  consCoregFname <- reactive({
+    paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_coregulators_in_consensus_network", ".xlsx", sep = "")
+  })
+
+  output$downloadConsCoregs <- downloadHandler(
+    filename = consCoregFname,
+    content = function(file) {
+      write_xlsx(consCoregs(), file)
+    }
+  )
 }
 
 # Run the shiny app with the options given above
