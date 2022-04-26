@@ -45,7 +45,12 @@ ui <- fluidPage(
         
         h4("Top coregulators in consensus network:"),
         downloadButton("downloadConsCoregs", "Download table"),
-        tableOutput(outputId = "consCoregs")
+        tableOutput(outputId = "consCoregs"),
+        
+
+        h4("Coregulators of the highest ranked target gene in PHOT network:"),
+        downloadButton("downloadPhotCoregs", "Download table"),
+        tableOutput(outputId = "photCoregsOfHighestRankTarget")
       )
     )
 )
@@ -117,16 +122,39 @@ server <- function(input, output) {
     consCoregs()
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 'g', 'g'))
 
-  consCoregFname <- reactive({
+  consCoregsFname <- reactive({
     paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_coregulators_in_consensus_network", ".xlsx", sep = "")
   })
 
   output$downloadConsCoregs <- downloadHandler(
-    filename = consCoregFname,
+    filename = consCoregsFname,
     content = function(file) {
       write_xlsx(consCoregs(), file)
     }
   )
+
+  # Extract all all coregulators for the single highest ranked target gene
+  # of the given gene ID in the PHOT network
+  photCoregsOfHighestRankTarget <- reactive({
+      regTFs(photNetwork, photTargets()$name[1])
+  })
+
+  output$photCoregsOfHighestRankTarget = renderTable({
+    photCoregsOfHighestRankTarget()
+  }, digits=targetsTableNumDigits, display=targetsTableFormat)
+
+  # downloadPhotCoregs
+  photCoregsFname <- reactive({
+    paste("gene_id_", input$geneID, "_coregulators_of_highest_ranked_target_gene_in_phot_network", ".xlsx", sep = "")
+  })
+
+  output$downloadPhotCoregs <- downloadHandler(
+    filename = photCoregsFname,
+    content = function(file) {
+      write_xlsx(photCoregsOfHighestRankTarget(), file)
+    }
+  )
+
 }
 
 # Run the shiny app with the options given above
