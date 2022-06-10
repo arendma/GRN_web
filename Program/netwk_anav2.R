@@ -50,7 +50,9 @@ regTFs = function(netwk, target_ID5_5, topx=NULL){
   res=res[order(abs(res$weight), decreasing=TRUE),]
   if (is.null(topx)) {
     topx=dim(res)[1]
-  } else {
+  } else if (topx<=1) {
+    topx=floor(dim(res)[1]*topx)
+    }else {
     topx=min(dim(res)[1], topx)
   }
   res= data.frame(regulator = res[1:topx, 'from'], name=sapply(res[1:topx, 'from'], gn_match, gndf=phyto_gn),weight= res[1:topx, 'weight'])
