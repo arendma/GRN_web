@@ -20,7 +20,9 @@ regtarget = function(netwk, reg_ID5_5, topx=NULL) {
     topx=dim(res)[1]
   #if topix is a gene list grep indices from ordered results and set topx to maximum index 
   #(get all genes with higher confidence then the supplied ones)
-  } else if (is.character(topx)) {
+  } else if (topx<=1) {
+    topx=floor(dim(res)[1]*topx)
+    } else if (is.character(topx)) {
     indx=sapply(topx, function(x) grep(pattern=x, x=res$to)[1])
     if (length(indx)==0) {
       stop('Error topx genes not found in results!')
@@ -86,6 +88,8 @@ regTFls <- function(netwk, GOIs, topx=25,  file=NULL) {
   if (is.null(topx)) {
     #set topx to maximum if isnull
     topx=nrow(reglist)
+  } else if (topx<=1) {
+    topx=floor(nrow(reglist)*topx)
   } else if (nrow(reglist)<topx) {
     warning("topx > inferred regulators, returning maximum number of regulators: ", nrow(reglist))
     topx=nrow(reglist)
