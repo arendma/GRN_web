@@ -10,9 +10,10 @@ consensus=read.delim('../Data/consensus0.1.tab', stringsAsFactors = FALSE)
 #PHOT network
 phot=read.delim('../Data/gen3x0.1consens.tab', stringsAsFactors = FALSE)
 
-#extract all targets for the two mads tfs in the consensus network
+#extract all targets for the first mads tfs in the consensus network
 cons_madstar1=regtarget(consensus,mads_ids[1])
-cons_madstar2=regtarget(consensus, mads_ids[2])
+#extract top 50% of targets for the first mads tfs
+cons_madstar2=regtarget(consensus, mads_ids[2], 0.5)
 
 #extract all targets of the two mads tfs in the PHOT network
 phot_madstar1=regtarget(phot, mads_ids[1])
@@ -24,10 +25,10 @@ phot_madstar2=regtarget(phot, mads_ids[2])
 #extract the the top 25 coregulators of mads 1 regulator targets and plot the network
 #this will create twot plots in pdf format and 1 tsv with label legend for the nodes
 #in the parent directory
-cons_coreg=regTFls(consensus, cons_madstar1$target[1:25], 25, '../test')
+cons_coreg=regTFls(consensus, cons_madstar1$target[1:25], 0.08, '../test')
 
-#find all coregulators for the single highest ranked target genen of mads2 in the phot network
-phot_mads2coreg=regTFs(phot, phot_madstar2$name[1])
+#find 70% of all coregulators for the single highest ranked target genen of mads2 in the phot network
+phot_mads2coreg=regTFs(phot, phot_madstar2$name[1], 0.7)
 
 # avoid error "cannot open file 'Rplots.pdf'" in Docker container
 pdf(NULL)
