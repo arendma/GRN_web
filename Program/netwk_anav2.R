@@ -5,7 +5,8 @@ source('genenamecleanupv2.R')
 
 regtarget = function(netwk, reg_ID5_5, topx=NULL) {
   #Takes a data.file network where columns are df[1]=from, df[2]=to, df[3], interaction strenth (either weight or rank) and 
-  #a JGI Cre5.5 gene ID, and topx which is either an integer of highest ranked genes to return
+  #a JGI Cre5.5 gene ID, and topx which is either an integer of highest ranked genes to return, a float between 0-1 that gives the 
+  # relative amount of highest ranking genes to return 
   #or a list of gene IDs. If  a list of genen names is given all genes above the lowest ranking of these
   #genes is returned. if topx=NULL all results are returned 
   phyto_gn =  genenamecleanup()
@@ -39,7 +40,7 @@ regTFs = function(netwk, target_ID5_5, topx=NULL){
   # Input:
   # netwk: data.frame network where columns are df[1]=from, df[2]=to, df[3], interaction strenth (either weight or rank)
   # target_ID5_5: string a JGI Cre5.5 gene ID of the target
-  # topx: integer number of interactions to return if topx=NULL all regulators are returned
+  # topx: integer number of interactions to return if topx=NULL all regulators are returned, if in the range 0-1 the rel. amount of interactions is returned
   # Output: data frame, df[1]=from, df[2]=to, df[3]= weight/rank, df[4] only if df[3] is rank a column wit 1/df[3] is attached as weight and returned
   phyto_gn =  genenamecleanup()
   if(colnames(netwk)[3]!='weight') {
@@ -64,7 +65,7 @@ regTFls <- function(netwk, GOIs, topx=25,  file=NULL) {
   #Input:
   # netwk: data.frame network where columns are df[1]=from, df[2]=to, df[3], interaction strenth (either weight or rank)
   # GOIs: charcater vector of JGI Cre5.5 of targets
-  # topx: nubmer of top regulators to consider and return default=25, if this is NULL all entries are returned
+  # topx: nubmer of top regulators to consider and return default=25, if this is NULL all entries are returned, if in the range 0-1 the rel. amount of entries is returned
   # file: optional(string with relative path and prefix, if given a tsv with all found regulators and graphs of the networks with topx regulators are saved
   require(igraph)
   phyto_gn =  genenamecleanup()
