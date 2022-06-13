@@ -13,10 +13,10 @@ phot=read.delim('../Data/gen3x0.1consens.tab', stringsAsFactors = FALSE)
 #extract all targets for the first mads tfs in the consensus network
 cons_madstar1=regtarget(consensus,mads_ids[1])
 #extract top 50% of targets for the first mads tfs
-cons_madstar2=regtarget(consensus, mads_ids[2], 0.5)
+cons_madstar2=regtarget(consensus, mads_ids[2])
 
 #extract all targets of the two mads tfs in the PHOT network
-phot_madstar1=regtarget(phot, mads_ids[1])
+phot_madstar1=regtarget(phot, mads_ids[1], 0.5)
 phot_madstar2=regtarget(phot, mads_ids[2])
 
 #add arabidopsis besthits
