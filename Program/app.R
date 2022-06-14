@@ -27,8 +27,8 @@ ui <- fluidPage(
           choices = GeneIds),
 
         sliderInput(
-          inputId = "num_top_targets",
-          label = "Number of targets",
+          inputId = "top_percent_targets",
+          label = "Top % of targets",
           min = 1,
           max = 100,
           value = 10)
@@ -69,13 +69,14 @@ server <- function(input, output) {
   targetsTableNumDigits = 5
 
   # show consensus targets table and allow file download
-
+  #
+  #~ cons_madstar1=regtarget(consensus,mads_ids[1])
   consTargets <- reactive({
-    regtarget(consensusNetwork, input$geneID, input$num_top_targets)
+    regtarget(consensusNetwork, input$geneID, input$top_percent_targets)
   })
-  
+
   consTargetsFname <- reactive({
-    paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_targets_in_consensus_network", ".xlsx", sep = "")
+    paste("gene_id_", input$geneID, "_top_", input$top_percent_targets, "_targets_in_consensus_network", ".xlsx", sep = "")
   })
 
   output$consTargets = renderTable({
@@ -90,13 +91,13 @@ server <- function(input, output) {
   )
 
   # show phot targets table and allow file download
-
+  #~ phot_madstar1=regtarget(phot, mads_ids[1])
   photTargets <- reactive({
-    regtarget(photNetwork, input$geneID, input$num_top_targets)
+    regtarget(photNetwork, input$geneID, input$top_percent_targets)
   })
 
   photTargetsFname <- reactive({
-    paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_targets_in_phot_network", ".xlsx", sep = "")
+    paste("gene_id_", input$geneID, "_top_", input$top_percent_targets, "_targets_in_phot_network", ".xlsx", sep = "")
   })
 
   output$photTargets = renderTable({
@@ -116,7 +117,7 @@ server <- function(input, output) {
   # This will create twot plots in pdf format and 1 tsv with label legend for the nodes
   # in the parent directory.
   consCoregs <- reactive({
-    regTFls(consensusNetwork, consTargets()$target[1:input$num_top_targets], input$num_top_targets, file=NULL)
+    regTFls(consensusNetwork, consTargets()$target[1:input$top_percent_targets], input$top_percent_targets, file=NULL)
   })
 
   output$consCoregs = renderTable({
@@ -124,7 +125,7 @@ server <- function(input, output) {
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 'g', 'g'))
 
   consCoregsFname <- reactive({
-    paste("gene_id_", input$geneID, "_top_", input$num_top_targets, "_coregulators_in_consensus_network", ".xlsx", sep = "")
+    paste("gene_id_", input$geneID, "_top_", input$top_percent_targets, "_coregulators_in_consensus_network", ".xlsx", sep = "")
   })
 
   output$downloadConsCoregs <- downloadHandler(
