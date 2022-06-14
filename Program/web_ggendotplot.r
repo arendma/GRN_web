@@ -35,5 +35,7 @@ web_ggendotplot <- function(enrichResult, nGO=5) {
   grid.newpage()
   grid.draw(cbind(ggplotGrob(hm), ggplotGrob(goplot)))
   
+  result <- list("goplot" = goplot, "heatmap"= hm)
+  return(result)
 }
 
