@@ -2,6 +2,8 @@ library(shiny)
 library(writexl)
 
 source('netwk_anav2.R')
+source('cregoenricherv9.r')
+source('web_ggendotplot.r')
 
 # consensus network
 consensusNetwork = read.delim('../Data/consensus0.1.tab', stringsAsFactors = FALSE)
@@ -14,10 +16,10 @@ GeneIds = as.list(unique(consensusNetwork$from))
 ui <- fluidPage(
     # app title
     titlePanel("GRN_web"),
-    
+
     # sidebar layout (inputs on the left, output on the right)
     sidebarLayout(
-      
+
       # sidebar panel for inputs on the left
       sidebarPanel(
         selectInput(
@@ -33,25 +35,30 @@ ui <- fluidPage(
           max = 100,
           value = 10)
       ),
-      
+
       # main panel for outputs on the right
       mainPanel(
         h4("Top targets in consensus network:"),
         downloadButton("downloadconsTargets", "Download table"),
         tableOutput(outputId = "consTargets"),
-        
+
         h4("Top targets in PHOT network:"),
         downloadButton("downloadPhotTargets", "Download table"),
         tableOutput(outputId = "photTargets"),
-        
+
         h4("Top coregulators in consensus network:"),
         downloadButton("downloadConsCoregs", "Download table"),
         tableOutput(outputId = "consCoregs"),
-        
 
-        h4("Coregulators of the highest ranked target gene in PHOT network:"),
+        h4("All coregulators of the highest ranked target gene in PHOT network:"),
         downloadButton("downloadPhotCoregs", "Download table"),
-        tableOutput(outputId = "photCoregsOfHighestRankTarget")
+        tableOutput(outputId = "photCoregs"),
+
+        h4("enrichedConsTargets:"),
+        plotOutput("enrichedConsGoPlot"),
+        plotOutput("enrichedConsHeatmap"),
+        downloadButton("downloadEnrichedConsTargets", "Download table")
+
       )
     )
 )
@@ -135,26 +142,60 @@ server <- function(input, output) {
     }
   )
 
-  # Extract all all coregulators for the single highest ranked target gene
-  # of the given gene ID in the PHOT network
-  photCoregsOfHighestRankTarget <- reactive({
-      regTFs(photNetwork, photTargets()$name[1])
+
+  # Find all co-regulators for the single highest ranked target gene
+  # of the given gene ID in the PHOT network.
+  #
+  #~ phot_mads2coreg=regTFs(phot, phot_madstar2$name[1])
+  photCoregs <- reactive({
+	  regTFs(photNetwork, photTargets()$name[1])
   })
 
-  output$photCoregsOfHighestRankTarget = renderTable({
-    photCoregsOfHighestRankTarget()
+  output$photCoregs = renderTable({
+    photCoregs()
   }, digits=targetsTableNumDigits, display=targetsTableFormat)
 
-  # downloadPhotCoregs
-  photCoregsFname <- reactive({
+  photCoregFname <- reactive({
     paste("gene_id_", input$geneID, "_coregulators_of_highest_ranked_target_gene_in_phot_network", ".xlsx", sep = "")
   })
 
   output$downloadPhotCoregs <- downloadHandler(
-    filename = photCoregsFname,
+    filename = photCoregFname,
     content = function(file) {
-      write_xlsx(photCoregsOfHighestRankTarget(), file)
+      write_xlsx(photCoregs(), file)
     }
+  )
+
+  # Analyse all targets in the consensus network for enriched GO terms
+  #~ res1=cregoenricher(samples = list(cons_madstar1$target), universe = unique(consensus$to), category = 'BP')
+  allConsTargets <- reactive({regtarget(consensusNetwork, input$geneID)})
+
+  # avoid error "cannot open file 'Rplots.pdf'" in Docker container
+  # when calling cregoenricher()
+  pdf(NULL)
+  enrichedConsTargets <- reactive({
+	cregoenricher(samples = list(allConsTargets()$target), universe = unique(consensusNetwork$to), category = 'BP')
+  })
+
+  output$enrichedConsTargets = renderTable({
+    enrichedConsTargets()
+  }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 's', 'g', 'g', 's', 'd'))
+
+  output$enrichedConsGoPlot <- renderPlot({
+    web_ggendotplot(enrichedConsTargets())$goplot
+  })
+
+  output$enrichedConsHeatmap <- renderPlot({
+    web_ggendotplot(enrichedConsTargets())$heatmap
+  })
+
+  enrichedConsTargetsFname <- reactive({
+    paste("gene_id_", input$geneID, "_enriched_go_terms_of_all_targets_in_consensus_network", ".xlsx", sep = "")
+  })
+
+  output$downloadEnrichedConsTargets <- downloadHandler(
+    filename = enrichedConsTargetsFname,
+    content = function(file) {write_xlsx(enrichedConsTargets(), file)}
   )
 
 }
