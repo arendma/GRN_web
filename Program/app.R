@@ -54,7 +54,7 @@ ui <- fluidPage(
         downloadButton("downloadPhotCoregs", "Download table"),
         tableOutput(outputId = "photCoregs"),
 
-        h4("enrichedConsTargets:"),
+        h4("significant target GO terms:"),
         plotOutput("enrichedConsGoPlot"),
         plotOutput("enrichedConsHeatmap"),
         downloadButton("downloadEnrichedConsTargets", "Download table")
