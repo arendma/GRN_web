@@ -60,7 +60,7 @@ regTFs = function(netwk, target_ID5_5, topx=NULL){
   return(res)
 }
 
-regTFls <- function(netwk, GOIs, topx=25,  file=NULL) {
+regulatorTranscriptionFactorList <- function(netwk, GOIs, topx=25,  file=NULL) {
   #Function returns a list of regulators based on a list of genes linked to a biochemical process
   #Input:
   # netwk: data.frame network where columns are df[1]=from, df[2]=to, df[3], interaction strenth (either weight or rank)

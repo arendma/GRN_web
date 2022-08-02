@@ -124,7 +124,7 @@ server <- function(input, output) {
   # This will create twot plots in pdf format and 1 tsv with label legend for the nodes
   # in the parent directory.
   consCoregs <- reactive({
-    regTFls(consensusNetwork, consTargets()$target[1:input$top_percent_targets], input$top_percent_targets, file=NULL)
+    regulatorTranscriptionFactorList(consensusNetwork, consTargets()$target[1:input$top_percent_targets], input$top_percent_targets, file=NULL)
   })
 
   output$consCoregs = renderTable({
