@@ -42,23 +42,33 @@ ui <- fluidPage(
         downloadButton("downloadconsTargets", "Download table"),
         tableOutput(outputId = "consTargets"),
 
+        tags$hr(), # horizontal line
         h4("Top targets in PHOT network:"),
         downloadButton("downloadPhotTargets", "Download table"),
         tableOutput(outputId = "photTargets"),
 
+        tags$hr(), # horizontal line
         h4("Top coregulators in consensus network:"),
+
+        fileInput("geneIdsFile", "Choose File to upload (one gene ID per line)",
+          multiple = FALSE,
+          accept = c("text/csv",
+                     "text/comma-separated-values,text/plain",
+                     ".csv")),
+
         downloadButton("downloadConsCoregs", "Download table"),
         tableOutput(outputId = "consCoregs"),
 
+        tags$hr(), # horizontal line
         h4("All coregulators of the highest ranked target gene in PHOT network:"),
         downloadButton("downloadPhotCoregs", "Download table"),
         tableOutput(outputId = "photCoregs"),
 
+        tags$hr(), # horizontal line
         h4("significant target GO terms:"),
         plotOutput("enrichedConsGoPlot"),
         plotOutput("enrichedConsHeatmap"),
         downloadButton("downloadEnrichedConsTargets", "Download table")
-
       )
     )
 )
@@ -124,10 +134,26 @@ server <- function(input, output) {
   # This will create twot plots in pdf format and 1 tsv with label legend for the nodes
   # in the parent directory.
   consCoregs <- reactive({
-    regulatorTranscriptionFactorList(consensusNetwork, consTargets()$target[1:input$top_percent_targets], input$top_percent_targets, file=NULL)
+    tryCatch(
+      {
+        geneIds <- scan(input$geneIdsFile$datapath, what="", sep='\n')
+      },
+      error = function(e) {
+        # return a safeError if a parsing error occurs
+        stop(safeError(e))
+      }
+    )
+
+    regulatorTranscriptionFactorList(netwk=consensusNetwork,
+      GOIs=geneIds,
+      topx=input$top_percent_targets,
+      file=NULL)
   })
 
   output$consCoregs = renderTable({
+    # don't calculate before gene IDs were uploaded
+    req(input$geneIdsFile)
+
     consCoregs()
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 'g', 'g'))
 
@@ -148,7 +174,7 @@ server <- function(input, output) {
   #
   #~ phot_mads2coreg=regTFs(phot, phot_madstar2$name[1])
   photCoregs <- reactive({
-	  regTFs(photNetwork, photTargets()$name[1])
+      regTFs(photNetwork, photTargets()$name[1])
   })
 
   output$photCoregs = renderTable({
@@ -174,7 +200,7 @@ server <- function(input, output) {
   # when calling cregoenricher()
   pdf(NULL)
   enrichedConsTargets <- reactive({
-	cregoenricher(samples = list(allConsTargets()$target), universe = unique(consensusNetwork$to), category = 'BP')
+    cregoenricher(samples = list(allConsTargets()$target), universe = unique(consensusNetwork$to), category = 'BP')
   })
 
   output$enrichedConsTargets = renderTable({
