@@ -60,11 +60,6 @@ ui <- fluidPage(
         tableOutput(outputId = "consCoregs"),
 
         tags$hr(), # horizontal line
-        h4("All coregulators of the highest ranked target gene in PHOT network:"),
-        downloadButton("downloadPhotCoregs", "Download table"),
-        tableOutput(outputId = "photCoregs"),
-
-        tags$hr(), # horizontal line
         h4("significant target GO terms:"),
         plotOutput("enrichedConsGoPlot"),
         plotOutput("enrichedConsHeatmap"),
@@ -165,30 +160,6 @@ server <- function(input, output) {
     filename = consCoregsFname,
     content = function(file) {
       write_xlsx(consCoregs(), file)
-    }
-  )
-
-
-  # Find all co-regulators for the single highest ranked target gene
-  # of the given gene ID in the PHOT network.
-  #
-  #~ phot_mads2coreg=regTFs(phot, phot_madstar2$name[1])
-  photCoregs <- reactive({
-      regTFs(photNetwork, photTargets()$name[1])
-  })
-
-  output$photCoregs = renderTable({
-    photCoregs()
-  }, digits=targetsTableNumDigits, display=targetsTableFormat)
-
-  photCoregFname <- reactive({
-    paste("gene_id_", input$geneID, "_coregulators_of_highest_ranked_target_gene_in_phot_network", ".xlsx", sep = "")
-  })
-
-  output$downloadPhotCoregs <- downloadHandler(
-    filename = photCoregFname,
-    content = function(file) {
-      write_xlsx(photCoregs(), file)
     }
   )
 
