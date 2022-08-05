@@ -48,7 +48,7 @@ ui <- fluidPage(
         tableOutput(outputId = "photTargets"),
 
         tags$hr(), # horizontal line
-        h4("Top coregulators in consensus network:"),
+        h4("Top coregulators in given network:"),
 
         fileInput("geneIdsFile", "Choose File to upload (one gene ID per line)",
           multiple = FALSE,
@@ -56,8 +56,15 @@ ui <- fluidPage(
                      "text/comma-separated-values,text/plain",
                      ".csv")),
 
-        downloadButton("downloadConsCoregs", "Download table"),
-        tableOutput(outputId = "consCoregs"),
+        # Input: Select network ----
+        radioButtons("networkName", "Network",
+                     choices = c(consensus = "consensus",
+                                 PHOT = "PHOT"),
+                     selected = "consensus"),
+
+        downloadButton("downloadCoregs", "Download table"),
+        tableOutput(outputId = "coregs"),
+
 
         tags$hr(), # horizontal line
         h4("significant target GO terms:"),
@@ -124,11 +131,14 @@ server <- function(input, output) {
   )
 
 
+########################################################################
+
+
   # Extract the top N coregulators from the consensus network regulator targets
   # and plot the network.
   # This will create twot plots in pdf format and 1 tsv with label legend for the nodes
   # in the parent directory.
-  consCoregs <- reactive({
+  coregs <- reactive({
     tryCatch(
       {
         geneIds <- scan(input$geneIdsFile$datapath, what="", sep='\n')
@@ -139,29 +149,39 @@ server <- function(input, output) {
       }
     )
 
-    regulatorTranscriptionFactorList(netwk=consensusNetwork,
+    if (input$networkName == "consensus") {
+        network = consensusNetwork
+    } else {
+        network = photNetwork
+    }
+
+    regulatorTranscriptionFactorList(netwk=network,
       GOIs=geneIds,
       topx=input$top_percent_targets,
       file=NULL)
   })
 
-  output$consCoregs = renderTable({
+  output$coregs = renderTable({
     # don't calculate before gene IDs were uploaded
     req(input$geneIdsFile)
 
-    consCoregs()
+    coregs()
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 'g', 'g'))
 
-  consCoregsFname <- reactive({
+  coregsFname <- reactive({
     paste("gene_id_", input$geneID, "_top_", input$top_percent_targets, "_coregulators_in_consensus_network", ".xlsx", sep = "")
   })
 
-  output$downloadConsCoregs <- downloadHandler(
-    filename = consCoregsFname,
+  output$downloadCoregs <- downloadHandler(
+    filename = coregsFname,
     content = function(file) {
-      write_xlsx(consCoregs(), file)
+      write_xlsx(coregs(), file)
     }
   )
+
+
+########################################################################
+
 
   # Analyse all targets in the consensus network for enriched GO terms
   #~ res1=cregoenricher(samples = list(cons_madstar1$target), universe = unique(consensus$to), category = 'BP')
@@ -195,7 +215,7 @@ server <- function(input, output) {
     content = function(file) {write_xlsx(enrichedConsTargets(), file)}
   )
 
-}
+} # END server()
 
 # Run the shiny app with the options given above
 shinyApp(ui = ui, server = server)
