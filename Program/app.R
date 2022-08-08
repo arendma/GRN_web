@@ -25,6 +25,7 @@ ui <- fluidPage(
         selectInput(
           inputId = "geneID",
           label = "Select gene ID",
+          selected = "Cre07.g318050",
           choices = c(Choose="", GeneIds)),
 
         sliderInput(
@@ -47,7 +48,7 @@ ui <- fluidPage(
         tableOutput(outputId = "photTargets"),
 
         tags$hr(), # horizontal line
-        h4("Top coregulators in given network:"),
+        h4(textOutput("coregsTitle")),
 
         fileInput("geneIdsFile", "Choose File to upload (one gene ID per line)",
           multiple = FALSE,
@@ -85,7 +86,7 @@ server <- function(input, output) {
   #      (whatever is shorter)
   targetsTableFormat = c('s', 's', 's', 'g')
   targetsTableNumDigits = 5
-  
+
   # show consensus targets table and allow file download
   #
   #~ cons_madstar1=regtarget(consensus,mads_ids[1])
@@ -141,6 +142,9 @@ server <- function(input, output) {
   # and plot the network.
   # This will create twot plots in pdf format and 1 tsv with label legend for the nodes
   # in the parent directory.
+  output$coregsTitle <- renderText({
+	  sprintf("Top coregulators in %s network:", input$networkName)})
+
   coregs <- reactive({
     tryCatch(
       {
