@@ -26,7 +26,7 @@ phot_madstar2=regtarget(phot, mads_ids[2])
 #extract the the top 25 coregulators of mads 1 regulator targets and plot the network
 #this will create twot plots in pdf format and 1 tsv with label legend for the nodes
 #in the parent directory (i.e. testlognet.pdf, testnet.pdf and testputreg.tsv)
-cons_coreg=regTFls(consensus, cons_madstar1$target[1:25], 0.08, '../test')
+cons_coreg = regulatorTranscriptionFactorList(consensus, cons_madstar1$target[1:25], 0.08, '../test')
 
 #find 70% of all coregulators for the single highest ranked target genen of mads2 in the phot network
 phot_mads2coreg=regTFs(phot, phot_madstar2$name[1], 0.7)

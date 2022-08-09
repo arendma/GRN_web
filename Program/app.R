@@ -25,8 +25,7 @@ ui <- fluidPage(
         selectInput(
           inputId = "geneID",
           label = "Select gene ID",
-          selected = "Cre11.g467577",
-          choices = GeneIds),
+          choices = c(Choose="", GeneIds)),
 
         sliderInput(
           inputId = "top_percent_targets",
@@ -42,23 +41,35 @@ ui <- fluidPage(
         downloadButton("downloadconsTargets", "Download table"),
         tableOutput(outputId = "consTargets"),
 
+        tags$hr(), # horizontal line
         h4("Top targets in PHOT network:"),
         downloadButton("downloadPhotTargets", "Download table"),
         tableOutput(outputId = "photTargets"),
 
-        h4("Top coregulators in consensus network:"),
-        downloadButton("downloadConsCoregs", "Download table"),
-        tableOutput(outputId = "consCoregs"),
+        tags$hr(), # horizontal line
+        h4(textOutput("coregsTitle")),
 
-        h4("All coregulators of the highest ranked target gene in PHOT network:"),
-        downloadButton("downloadPhotCoregs", "Download table"),
-        tableOutput(outputId = "photCoregs"),
+        fileInput("geneIdsFile", "Choose File to upload (one gene ID per line)",
+          multiple = FALSE,
+          accept = c("text/csv",
+                     "text/comma-separated-values,text/plain",
+                     ".csv")),
 
+        # Input: Select network ----
+        radioButtons("networkName", "Network",
+                     choices = c(consensus = "consensus",
+                                 PHOT = "PHOT"),
+                     selected = "consensus"),
+
+        downloadButton("downloadCoregs", "Download table"),
+        tableOutput(outputId = "coregs"),
+
+
+        tags$hr(), # horizontal line
         h4("significant target GO terms:"),
         plotOutput("enrichedConsGoPlot"),
         plotOutput("enrichedConsHeatmap"),
         downloadButton("downloadEnrichedConsTargets", "Download table")
-
       )
     )
 )
@@ -79,10 +90,12 @@ server <- function(input, output) {
   #
   #~ cons_madstar1=regtarget(consensus,mads_ids[1])
   consTargets <- reactive({
+    req(input$geneID) # don't try to calculate before user selects gene ID
     regtarget(consensusNetwork, input$geneID, input$top_percent_targets)
   })
 
   consTargetsFname <- reactive({
+	req(input$geneID) # don't try to calculate before user selects gene ID
     paste("gene_id_", input$geneID, "_top_", input$top_percent_targets, "_targets_in_consensus_network", ".xlsx", sep = "")
   })
 
@@ -100,10 +113,12 @@ server <- function(input, output) {
   # show phot targets table and allow file download
   #~ phot_madstar1=regtarget(phot, mads_ids[1])
   photTargets <- reactive({
+    req(input$geneID) # don't try to calculate before user selects gene ID
     regtarget(photNetwork, input$geneID, input$top_percent_targets)
   })
 
   photTargetsFname <- reactive({
+    req(input$geneID) # don't try to calculate before user selects gene ID
     paste("gene_id_", input$geneID, "_top_", input$top_percent_targets, "_targets_in_phot_network", ".xlsx", sep = "")
   })
 
@@ -119,62 +134,78 @@ server <- function(input, output) {
   )
 
 
+########################################################################
+
+
   # Extract the top N coregulators from the consensus network regulator targets
   # and plot the network.
   # This will create twot plots in pdf format and 1 tsv with label legend for the nodes
   # in the parent directory.
-  consCoregs <- reactive({
-    regTFls(consensusNetwork, consTargets()$target[1:input$top_percent_targets], input$top_percent_targets, file=NULL)
+  output$coregsTitle <- renderText({
+	  sprintf("Top coregulators in %s network:", input$networkName)})
+
+  coregs <- reactive({
+    tryCatch(
+      {
+        geneIds <- scan(input$geneIdsFile$datapath, what="", sep='\n')
+      },
+      error = function(e) {
+        # return a safeError if a parsing error occurs
+        stop(safeError(e))
+      }
+    )
+
+    if (input$networkName == "consensus") {
+        network = consensusNetwork
+    } else {
+        network = photNetwork
+    }
+
+    regulatorTranscriptionFactorList(netwk=network,
+      GOIs=geneIds,
+      topx=input$top_percent_targets,
+      file=NULL)
   })
 
-  output$consCoregs = renderTable({
-    consCoregs()
+  output$coregs = renderTable({
+    # don't calculate before gene IDs were uploaded
+    req(input$geneIdsFile)
+
+    coregs()
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 'g', 'g'))
 
-  consCoregsFname <- reactive({
-    paste("gene_id_", input$geneID, "_top_", input$top_percent_targets, "_coregulators_in_consensus_network", ".xlsx", sep = "")
+  # TODO: add geneIDs to file name ??? might be too many / better add geneIds filename?
+  coregsFname <- reactive({
+    paste("top_", input$top_percent_targets, "_coregulators_in_", network, "_network", ".xlsx", sep = "")
   })
 
-  output$downloadConsCoregs <- downloadHandler(
-    filename = consCoregsFname,
+  output$downloadCoregs <- downloadHandler(
+    filename = coregsFname,
     content = function(file) {
-      write_xlsx(consCoregs(), file)
+      write_xlsx(coregs(), file)
     }
   )
 
 
-  # Find all co-regulators for the single highest ranked target gene
-  # of the given gene ID in the PHOT network.
-  #
-  #~ phot_mads2coreg=regTFs(phot, phot_madstar2$name[1])
-  photCoregs <- reactive({
-	  regTFs(photNetwork, photTargets()$name[1])
-  })
+########################################################################
 
-  output$photCoregs = renderTable({
-    photCoregs()
-  }, digits=targetsTableNumDigits, display=targetsTableFormat)
-
-  photCoregFname <- reactive({
-    paste("gene_id_", input$geneID, "_coregulators_of_highest_ranked_target_gene_in_phot_network", ".xlsx", sep = "")
-  })
-
-  output$downloadPhotCoregs <- downloadHandler(
-    filename = photCoregFname,
-    content = function(file) {
-      write_xlsx(photCoregs(), file)
-    }
-  )
 
   # Analyse all targets in the consensus network for enriched GO terms
   #~ res1=cregoenricher(samples = list(cons_madstar1$target), universe = unique(consensus$to), category = 'BP')
-  allConsTargets <- reactive({regtarget(consensusNetwork, input$geneID)})
+  allConsTargets <- reactive({
+    req(input$geneID) # don't try to calculate before user selects gene ID
+	regtarget(consensusNetwork, input$geneID)
+  })
 
   # avoid error "cannot open file 'Rplots.pdf'" in Docker container
   # when calling cregoenricher()
   pdf(NULL)
   enrichedConsTargets <- reactive({
-	cregoenricher(samples = list(allConsTargets()$target), universe = unique(consensusNetwork$to), category = 'BP')
+	# NOTE: I don't know why this req() is necessary, as
+	# this reactive environment just calls allConsTargets(),
+	# which is another reactive env that already calls req().
+	req(input$geneID)
+    cregoenricher(samples = list(allConsTargets()$target), universe = unique(consensusNetwork$to), category = 'BP')
   })
 
   output$enrichedConsTargets = renderTable({
@@ -190,6 +221,7 @@ server <- function(input, output) {
   })
 
   enrichedConsTargetsFname <- reactive({
+	req(input$geneID) # don't try to calculate before user selects gene ID
     paste("gene_id_", input$geneID, "_enriched_go_terms_of_all_targets_in_consensus_network", ".xlsx", sep = "")
   })
 
@@ -198,7 +230,7 @@ server <- function(input, output) {
     content = function(file) {write_xlsx(enrichedConsTargets(), file)}
   )
 
-}
+} # END server()
 
 # Run the shiny app with the options given above
 shinyApp(ui = ui, server = server)
