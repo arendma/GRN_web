@@ -4,7 +4,7 @@ source('cregoenricherv9.r')
 source('web_ggendotplot.r')
 
 #Regulator IDs
-mads_ids=c('Cre11.g467577', 'Cre06.g253250')
+mads_ids=c('Cre07.g318050', 'Cre06.g253250')
 
 #Consensus network
 consensus=read.delim('../Data/consensus0.1.tab', stringsAsFactors = FALSE)
