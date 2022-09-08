@@ -15,6 +15,6 @@ as well as a web interface for using it from your browser.
 
 ## Usage example
 
-The script `Program/test.R` contains an example of the functions and how they are used.
+The script `Program/example.R` contains an example of the functions and how they are used.
 
 
