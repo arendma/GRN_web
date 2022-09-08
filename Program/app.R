@@ -95,7 +95,7 @@ server <- function(input, output) {
   })
 
   consTargetsFname <- reactive({
-	req(input$geneID) # don't try to calculate before user selects gene ID
+    req(input$geneID) # don't try to calculate before user selects gene ID
     paste("gene_id_", input$geneID, "_top_", input$top_percent_targets, "_targets_in_consensus_network", ".xlsx", sep = "")
   })
 
@@ -142,7 +142,7 @@ server <- function(input, output) {
   # This will create twot plots in pdf format and 1 tsv with label legend for the nodes
   # in the parent directory.
   output$coregsTitle <- renderText({
-	  sprintf("Top coregulators in %s network:", input$networkName)})
+      sprintf("Top coregulators in %s network:", input$networkName)})
 
   coregs <- reactive({
     tryCatch(
@@ -170,7 +170,6 @@ server <- function(input, output) {
   output$coregs = renderTable({
     # don't calculate before gene IDs were uploaded
     req(input$geneIdsFile)
-
     coregs()
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 'g', 'g'))
 
@@ -194,17 +193,17 @@ server <- function(input, output) {
   #~ res1=cregoenricher(samples = list(cons_madstar1$target), universe = unique(consensus$to), category = 'BP')
   allConsTargets <- reactive({
     req(input$geneID) # don't try to calculate before user selects gene ID
-	regtarget(consensusNetwork, input$geneID)
+    regtarget(consensusNetwork, input$geneID)
   })
 
   # avoid error "cannot open file 'Rplots.pdf'" in Docker container
   # when calling cregoenricher()
   pdf(NULL)
   enrichedConsTargets <- reactive({
-	# NOTE: I don't know why this req() is necessary, as
-	# this reactive environment just calls allConsTargets(),
-	# which is another reactive env that already calls req().
-	req(input$geneID)
+    # NOTE: I don't know why this req() is necessary, as
+    # this reactive environment just calls allConsTargets(),
+    # which is another reactive env that already calls req().
+    req(input$geneID)
     cregoenricher(samples = list(allConsTargets()$target), universe = unique(consensusNetwork$to), category = 'BP')
   })
 
@@ -221,7 +220,7 @@ server <- function(input, output) {
   })
 
   enrichedConsTargetsFname <- reactive({
-	req(input$geneID) # don't try to calculate before user selects gene ID
+    req(input$geneID) # don't try to calculate before user selects gene ID
     paste("gene_id_", input$geneID, "_enriched_go_terms_of_all_targets_in_consensus_network", ".xlsx", sep = "")
   })
 
