@@ -36,6 +36,7 @@ pdf(NULL)
 
 ## Analyse all targets in the consensus network for GO terms enriched
 res1=cregoenricher(samples = list(cons_madstar1$target), universe = unique(consensus$to), category = 'BP')
+##plots the top 5 most significantly enriched GO terms
 enrichment_plots1 = web_ggendotplot(res1)
 
 ### draw enrichment plots in a grid
