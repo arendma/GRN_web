@@ -66,7 +66,7 @@ ui <- fluidPage(
 
 
         tags$hr(), # horizontal line
-        h4("significant target GO terms:"),
+        h4("Top 5 significant enriched GO terms (in 100% of targets):"),
         plotOutput("enrichedConsGoPlot"),
         plotOutput("enrichedConsHeatmap"),
         downloadButton("downloadEnrichedConsTargets", "Download table")
