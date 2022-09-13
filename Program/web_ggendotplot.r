@@ -8,7 +8,7 @@ web_ggendotplot <- function(enrichResult, nGO=5) {
   if (anyDuplicated(enrichResult$Description)) {
     print(enrichResult$Description[duplicated(enrichResult$Description)])
   }
-  enrichResult=enrichResult[1:min(nrow(enrichResult), nGO),]
+  enrichResult=enrichResult[order(enrichResult$p.adjust)[1:min(nrow(enrichResult), nGO)],]
   #calculate jaccard index of linked genes in each GO set
   jaccard=function(x, y) {
     return(length(intersect(x,y))/length(union(x,y)))
@@ -22,7 +22,7 @@ web_ggendotplot <- function(enrichResult, nGO=5) {
   d=dist(jaccard_mat, method = 'euclidian')
   cl=hclust(d)
   enrichResult=enrichResult[rev(cl$order),]
-  jaccard_mat=jaccard_mat[rev(cl$order),cl$order] 
+  jaccard_mat=jaccard_mat[rev(cl$order),rev(cl$order)] 
   plot_tab=data.frame(x=rep(enrichResult$Description, each=nrow(jaccard_mat)), y=rep(enrichResult$Description, nrow(jaccard_mat)), value=as.vector(jaccard_mat))
   hm=ggplot(plot_tab, aes(x, y, fill=value)) + geom_tile() + labs(fill="Jaccard Idx")+ scale_x_discrete(limits=enrichResult$Description, position='top') + scale_y_discrete(limits=enrichResult$Description) +
     theme(legend.position = "left", text= element_text(size=10), axis.title= element_blank(), axis.text.x=element_text(angle=90, hjust=0))
