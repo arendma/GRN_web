@@ -1,4 +1,5 @@
 library(shiny)
+library(shinybusy)
 library(writexl)
 library(ggplot2)
 library(gridExtra)
@@ -18,6 +19,9 @@ GeneIds = as.list(unique(consensusNetwork$from))
 ui <- fluidPage(
     # app title
     titlePanel("GRN_web"),
+
+    # show that we're waiting for results
+    add_busy_spinner(spin = "fading-circle", position = "top-right"),
 
     # sidebar layout (inputs on the left, output on the right)
     sidebarLayout(
