@@ -1,5 +1,7 @@
 library(shiny)
 library(writexl)
+library(ggplot2)
+library(gridExtra)
 
 source('netwk_anav2.R')
 source('cregoenricherv9.r')
@@ -67,8 +69,7 @@ ui <- fluidPage(
 
         tags$hr(), # horizontal line
         h4("Top 5 significant enriched GO terms (in 100% of targets):"),
-        plotOutput("enrichedConsGoPlot"),
-        plotOutput("enrichedConsHeatmap"),
+        plotOutput("enrichedConsGoPlotHeatmap"),
         downloadButton("downloadEnrichedConsTargets", "Download table")
       )
     )
@@ -211,12 +212,11 @@ server <- function(input, output) {
     enrichedConsTargets()
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 's', 'g', 'g', 's', 'd'))
 
-  output$enrichedConsGoPlot <- renderPlot({
-    web_ggendotplot(enrichedConsTargets())$goplot
-  })
-
-  output$enrichedConsHeatmap <- renderPlot({
-    web_ggendotplot(enrichedConsTargets())$heatmap
+  output$enrichedConsGoPlotHeatmap <- renderPlot({
+    heatmap <- ggplot2::ggplotGrob(web_ggendotplot(enrichedConsTargets())$heatmap)
+    goplot <- ggplot2::ggplotGrob(web_ggendotplot(enrichedConsTargets())$goplot)
+    both <- gridExtra::arrangeGrob(heatmap, goplot, ncol=2)
+    plot(both)
   })
 
   enrichedConsTargetsFname <- reactive({
