@@ -1,13 +1,42 @@
-### GRN WEB
-This repository contains code for accessing the consensus and PHOT network from 
-the publication [Widening the landscape of transcriptional regulation of algal photoprotection](https://www.biorxiv.org/content/10.1101/2022.02.25.482034v3) to be developed into a webtool
+# GRN_web
 
-##Setup
-- install R according to your OS installation instructions
-- Inside R change the working directory to ./Program/ and type `source("setup.r")` to install nescesarry packages
+This repository contains the code for accessing the consensus and PHOT network
+from the publication 
+[Arend et al. Widening the landscape of transcriptional regulation of algal photoprotection](https://www.biorxiv.org/content/10.1101/2022.02.25.482034v3).
 
-##TEST
+It also contains a simple web interface implemented in Shiny for using it from your browser.
 
-the script Program/test.r contains an example of the functions and how they are used
+
+## Setup
+
+You have two options:
+
+### Direct Installation
+
+- install R (version 4.0 or higher) [according to your OS installation instructions](https://cran.r-project.org/)
+- clone this repository
+- change into the `./Program` directory of this repo and run `Rscript setup.R`
+
+### Docker-based Installation
+
+This is mainly useful if you just want to run the GRN_web interface or
+if you need to keep your existing R installation untouched.
+
+- install Docker [according to your OS installation instructions](https://docs.docker.com/engine/install/)
+- clone this repository
+- inside the repository's main directory, run `docker build -t grn-web .` to install GRN_web inside a Docker container
+- afterwards, you can start the container like this: `docker run --env PORT=8181 -p 8181:8181 -it grn-web`
+- now, visit http://localhost:8181/ in your browser to use GRN_web
+
+
+## Usage example
+
+The script `Program/example.R` contains an example of the functions and how they are used.
+
+To use the web interface, change into the `./Program` directory and execute `Rscript app.R`.
+It will show the URL you need to use in your browser, e.g. `http://127.0.0.1:3395`.
+This is how the app looks like:
+
+![GRN_web demo screencast](grn-web-demo.gif)
 
 

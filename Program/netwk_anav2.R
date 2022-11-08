@@ -1,12 +1,14 @@
-#Function to extract prediction from grns
+source('genenamecleanupv2.R')
+
+# Functions to extract prediction from grns
 
 
 regtarget = function(netwk, reg_ID5_5, topx=NULL) {
   #Takes a data.file network where columns are df[1]=from, df[2]=to, df[3], interaction strenth (either weight or rank) and 
-  #a JGI Cre5.5 gene ID, and topx which is either an integer of highest ranked genes to return
+  #a JGI Cre5.5 gene ID, and topx which is either an integer of highest ranked genes to return, a float between 0-1 that gives the 
+  # relative amount of highest ranking genes to return 
   #or a list of gene IDs. If  a list of genen names is given all genes above the lowest ranking of these
   #genes is returned. if topx=NULL all results are returned 
-  source('genenamecleanupv2.r')
   phyto_gn =  genenamecleanup()
   if(colnames(netwk)[3]!='weight') {
     netwk <- data.frame(netwk, weight = 1/netwk[,3])
@@ -19,7 +21,9 @@ regtarget = function(netwk, reg_ID5_5, topx=NULL) {
     topx=dim(res)[1]
   #if topix is a gene list grep indices from ordered results and set topx to maximum index 
   #(get all genes with higher confidence then the supplied ones)
-  } else if (is.character(topx)) {
+  } else if (topx<=1) {
+    topx=floor(dim(res)[1]*topx)
+    } else if (is.character(topx)) {
     indx=sapply(topx, function(x) grep(pattern=x, x=res$to)[1])
     if (length(indx)==0) {
       stop('Error topx genes not found in results!')
@@ -36,9 +40,8 @@ regTFs = function(netwk, target_ID5_5, topx=NULL){
   # Input:
   # netwk: data.frame network where columns are df[1]=from, df[2]=to, df[3], interaction strenth (either weight or rank)
   # target_ID5_5: string a JGI Cre5.5 gene ID of the target
-  # topx: integer number of interactions to return if topx=NULL all regulators are returned
+  # topx: integer number of interactions to return if topx=NULL all regulators are returned, if in the range 0-1 the rel. amount of interactions is returned
   # Output: data frame, df[1]=from, df[2]=to, df[3]= weight/rank, df[4] only if df[3] is rank a column wit 1/df[3] is attached as weight and returned
-  source('genenamecleanupv2.r')
   phyto_gn =  genenamecleanup()
   if(colnames(netwk)[3]!='weight') {
     netwk <- data.frame(netwk, weight = 1/netwk[,3])
@@ -48,21 +51,22 @@ regTFs = function(netwk, target_ID5_5, topx=NULL){
   res=res[order(abs(res$weight), decreasing=TRUE),]
   if (is.null(topx)) {
     topx=dim(res)[1]
-  } else {
+  } else if (topx<=1) {
+    topx=floor(dim(res)[1]*topx)
+    }else {
     topx=min(dim(res)[1], topx)
   }
   res= data.frame(regulator = res[1:topx, 'from'], name=sapply(res[1:topx, 'from'], gn_match, gndf=phyto_gn),weight= res[1:topx, 'weight'])
   return(res)
 }
 
-regTFls <- function(netwk, GOIs, topx=25,  file=NULL) {
+regulatorTranscriptionFactorList <- function(netwk, GOIs, topx=25,  file=NULL) {
   #Function returns a list of regulators based on a list of genes linked to a biochemical process
   #Input:
   # netwk: data.frame network where columns are df[1]=from, df[2]=to, df[3], interaction strenth (either weight or rank)
   # GOIs: charcater vector of JGI Cre5.5 of targets
-  # topx: nubmer of top regulators to consider and return default=25, if this is NULL all entries are returned
+  # topx: nubmer of top regulators to consider and return default=25, if this is NULL all entries are returned, if in the range 0-1 the rel. amount of entries is returned
   # file: optional(string with relative path and prefix, if given a tsv with all found regulators and graphs of the networks with topx regulators are saved
-  source('genenamecleanupv2.r')
   require(igraph)
   phyto_gn =  genenamecleanup()
   if(colnames(netwk)[3]!='weight') {
@@ -87,6 +91,8 @@ regTFls <- function(netwk, GOIs, topx=25,  file=NULL) {
   if (is.null(topx)) {
     #set topx to maximum if isnull
     topx=nrow(reglist)
+  } else if (topx<=1) {
+    topx=floor(nrow(reglist)*topx)
   } else if (nrow(reglist)<topx) {
     warning("topx > inferred regulators, returning maximum number of regulators: ", nrow(reglist))
     topx=nrow(reglist)
