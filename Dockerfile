@@ -21,6 +21,7 @@ WORKDIR /opt/grn-web/Program
 
 # open port used by our shiny app (when run via 'make run-shiny')
 EXPOSE 8181
+EXPOSE 80
 
 # run app on container start (use heroku port variable for deployment)
 CMD ["R", "-e", "shiny::runApp('/opt/grn-web/Program', host = '0.0.0.0', port = as.numeric(Sys.getenv('PORT')))"]
