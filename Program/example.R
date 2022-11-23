@@ -32,6 +32,7 @@ cons_coreg = regulatorTranscriptionFactorList(consensus, cons_madstar1$target[1:
 phot_mads2coreg=regTFs(phot, phot_madstar2$name[1], 0.7)
 
 # avoid error "cannot open file 'Rplots.pdf'" in Docker container
+# NOTE: remove this line to see the plots!
 pdf(NULL)
 
 ## Analyse all targets in the consensus network for GO terms enriched
