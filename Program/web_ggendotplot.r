@@ -27,14 +27,40 @@ web_ggendotplot <- function(enrichResult, nGO=5) {
   enrichResult=enrichResult[rev(cl$order),]
   jaccard_mat=jaccard_mat[rev(cl$order),rev(cl$order)]
 
-  plot_tab=data.frame(x=rep(enrichResult$Description, each=nrow(jaccard_mat)), y=rep(enrichResult$Description, nrow(jaccard_mat)), value=as.vector(jaccard_mat))
-  hm=ggplot(plot_tab, aes(x, y, fill=value)) + geom_tile() + labs(fill="Jaccard Idx")+ scale_x_discrete(limits=enrichResult$Description, position='top') + scale_y_discrete(limits=enrichResult$Description) +
-    theme(legend.position = "left", text= element_text(size=10), axis.title= element_blank(), axis.text.x=element_text(angle=90, hjust=0))
-  plotdat <-data.frame(desc =factor(enrichResult$Description, levels=unique(enrichResult$Description)), padj =enrichResult$p.adjust,
-                       count =enrichResult$Count, Gene_Ratio=sapply(enrichResult$GeneRatio, function(x) {eval(parse(text=x))}))
-  xlimits <- c(min(plotdat$Gene_Ratio)- 0.5*min(plotdat$Gene_Ratio), max(plotdat$Gene_Ratio)+0.3*max(plotdat$Gene_Ratio))
-  goplot <- ggplot(data=plotdat, aes(x=Gene_Ratio, y=desc, color=padj, size=count))+ geom_point() + scale_x_continuous(limits = xlimits) + theme_light() +
-    scale_colour_gradient(low = "red", high = "blue") + theme(text = element_text(size=10),axis.title.y=element_blank(), axis.text.y=element_blank()) + scale_size(range=c(9,15))
+  plot_tab = data.frame(
+    x=rep(enrichResult$Description, each=nrow(jaccard_mat)),
+    y=rep(enrichResult$Description, nrow(jaccard_mat)),
+    value=as.vector(jaccard_mat))
+
+  hm = ggplot(plot_tab, aes(x, y, fill=value)) +
+    geom_tile() +
+    labs(fill="Jaccard Idx") +
+    scale_x_discrete(limits=enrichResult$Description, position='top') +
+    scale_y_discrete(limits=enrichResult$Description) +
+    theme(legend.position = "left",
+          text=element_text(size=10),
+          axis.title=element_blank(),
+          axis.text.x=element_text(angle=90, hjust=0))
+
+  plotdat <- data.frame(
+    desc=factor(enrichResult$Description, levels=unique(enrichResult$Description)),
+    padj=enrichResult$p.adjust,
+    count=enrichResult$Count,
+    Gene_Ratio=sapply(enrichResult$GeneRatio, function(x) {eval(parse(text=x))}))
+
+  xlimits <- c(min(plotdat$Gene_Ratio)- 0.5*min(plotdat$Gene_Ratio),
+               max(plotdat$Gene_Ratio)+0.3*max(plotdat$Gene_Ratio))
+
+  goplot <- ggplot(data=plotdat, aes(x=Gene_Ratio, y=desc, color=padj, size=count)) +
+    geom_point() +
+    scale_x_continuous(limits = xlimits) +
+    theme_light() +
+    scale_colour_gradient(low = "red", high = "blue") +
+    theme(text=element_text(size=10),
+          axis.title.y=element_blank(),
+          axis.text.y=element_blank()) +
+    scale_size(range=c(9,15))
+
   result <- list("goplot" = goplot, "heatmap"= hm)
   return(result)
 }
@@ -43,6 +69,7 @@ print_go_enrichment_plot <- function(go_enrichment_plot) {
   require(grid)
 
   grid.newpage()
-  grid.draw(cbind(ggplotGrob(go_enrichment_plot$heatmap), ggplotGrob(go_enrichment_plot$goplot)))
+  grid.draw(cbind(ggplotGrob(go_enrichment_plot$heatmap),
+                  ggplotGrob(go_enrichment_plot$goplot)))
 }
 
