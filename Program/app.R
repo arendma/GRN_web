@@ -2,7 +2,6 @@ library(shiny)
 library(shinybusy)
 library(writexl)
 library(ggplot2)
-library(gridExtra)
 
 source('netwk_anav2.R')
 source('cregoenricherv9.r')
@@ -217,10 +216,9 @@ server <- function(input, output) {
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 's', 'g', 'g', 's', 'd'))
 
   output$enrichedConsGoPlotHeatmap <- renderPlot({
-    heatmap <- ggplot2::ggplotGrob(web_ggendotplot(enrichedConsTargets())$heatmap)
-    goplot <- ggplot2::ggplotGrob(web_ggendotplot(enrichedConsTargets())$goplot)
-    both <- gridExtra::arrangeGrob(heatmap, goplot, ncol=2)
-    plot(both)
+    require(grid)
+    grid.draw(cbind(ggplotGrob(web_ggendotplot(enrichedConsTargets())$heatmap),
+                    ggplotGrob(web_ggendotplot(enrichedConsTargets())$goplot)))
   })
 
   enrichedConsTargetsFname <- reactive({
