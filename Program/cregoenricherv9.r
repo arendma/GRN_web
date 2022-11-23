@@ -22,7 +22,6 @@ cregoenricher <- function(samples, universe, category="BP", k=4, nGO=5)  {
   if (!(category %in% c('MF','BP'))) {
     stop('category must be either "MF" or "BP"')
   }
-  source('web_ggendotplot.r')
   ##GO enrichment
   #Import C.re. GO terms from file
   annot <- read.delim(file = "../Data/Creinhardtii_281_v5.6.annotation_info.txt",header = T,sep = "\t",row.names = 1,stringsAsFactors = F)
@@ -179,9 +178,9 @@ cregoenricher <- function(samples, universe, category="BP", k=4, nGO=5)  {
       Count=sapply(rownames(test_stat), function(x) {return(length(GO_sample[[x]]))})
       k_res=data.frame(ID=rownames(test_stat), Description=df_G2NAME[match(rownames(test_stat),df_G2NAME$TERM), 2], test_stat, p.adjust=p.adjust(test_stat$pvalue, method='BH'), geneID , Count)  
       tempres <- k_res[k_res$p.adjust<0.05,]
+
       #only document results if significantly enriched genes are found
       if(dim(data.frame(tempres))[1] >0) {
-        goplot=web_ggendotplot(tempres, nGO = nGO)
         return(tempres)
       } else {
         print('No significantly enriched GO terms found')
