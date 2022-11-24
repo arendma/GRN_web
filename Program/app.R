@@ -189,8 +189,13 @@ server <- function(input, output) {
   })
 
   output$coregs = renderTable({
-    # don't calculate before gene IDs were uploaded
-    req(input$geneIdsFile)
+    if (input$geneIdsInputChoice == "upload") {
+      # don't calculate before gene IDs were uploaded
+      req(input$geneIdsFile)
+    } else {
+      # don't calculate before gene IDs were entered into the text box
+      req(input$geneIdsTextInput)
+    }
     coregs()
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 'g', 'g'))
 
