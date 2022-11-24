@@ -173,20 +173,8 @@ server <- function(input, output) {
           }
         )        
     } else {
-        # TODO: implement parsing gene IDs from text area
-        # textAreaInput("geneIdsTextInput", "Enter one gene ID per line", rows = 3)
-
-        tryCatch(
-          {
-            geneIds <- unlist(strsplit(input$geneIdsTextInput, split='\n'))
-          },
-          error = function(e) {
-            # return a safeError if a parsing error occurs
-            stop(safeError(e))
-          }
-        )  
+        geneIds <- unlist(strsplit(input$geneIdsTextInput, split='\n'))
     }
-
 
     if (input$networkName == "consensus") {
         network = consensusNetwork
