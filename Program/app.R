@@ -54,11 +54,24 @@ ui <- fluidPage(
         tags$hr(), # horizontal line
         h4(textOutput("coregsTitle")),
 
-        fileInput("geneIdsFile", "Choose File to upload (one gene ID per line)",
-          multiple = FALSE,
-          accept = c("text/csv",
-                     "text/comma-separated-values,text/plain",
-                     ".csv")),
+        # Input: Choose "file upload" or enter gene IDs manually
+        radioButtons("geneIdsInputChoice", "Upload gene IDs or enter them manually?",
+                     choices = c("upload file" = "upload",
+                                 "enter manually" = "text-input"),
+                     selected = "text-input"), 
+
+        conditionalPanel(
+          condition = "input.geneIdsInputChoice == 'upload'", 
+          fileInput("geneIdsFile",
+                    "Choose File to upload (one gene ID per line)",
+                    multiple = FALSE,
+                    accept = c("text/csv", "text/comma-separated-values,text/plain",
+                               ".csv"))),
+
+        conditionalPanel(
+          condition = "input.geneIdsInputChoice == 'text-input'",
+          textAreaInput("geneIdsTextInput", "Enter one gene ID per line", rows = 3)
+        ),
 
         # Input: Select network ----
         radioButtons("networkName", "Network",
@@ -149,15 +162,19 @@ server <- function(input, output) {
       sprintf("Top coregulators in %s network:", input$networkName)})
 
   coregs <- reactive({
-    tryCatch(
-      {
-        geneIds <- scan(input$geneIdsFile$datapath, what="", sep='\n')
-      },
-      error = function(e) {
-        # return a safeError if a parsing error occurs
-        stop(safeError(e))
-      }
-    )
+    if (input$geneIdsInputChoice == "upload") {
+        tryCatch(
+          {
+            geneIds <- scan(input$geneIdsFile$datapath, what="", sep='\n')
+          },
+          error = function(e) {
+            # return a safeError if a parsing error occurs
+            stop(safeError(e))
+          }
+        )        
+    } else {
+        geneIds <- unlist(strsplit(input$geneIdsTextInput, split='\n'))
+    }
 
     if (input$networkName == "consensus") {
         network = consensusNetwork
@@ -172,8 +189,13 @@ server <- function(input, output) {
   })
 
   output$coregs = renderTable({
-    # don't calculate before gene IDs were uploaded
-    req(input$geneIdsFile)
+    if (input$geneIdsInputChoice == "upload") {
+      # don't calculate before gene IDs were uploaded
+      req(input$geneIdsFile)
+    } else {
+      # don't calculate before gene IDs were entered into the text box
+      req(input$geneIdsTextInput)
+    }
     coregs()
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 'g', 'g'))
 
