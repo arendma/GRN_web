@@ -1,11 +1,9 @@
 # GRN_web
 
-This repository contains the code for accessing the consensus and PHOT network
-from the publication 
-[Arend et al. Widening the landscape of transcriptional regulation of algal photoprotection](https://www.biorxiv.org/content/10.1101/2022.02.25.482034v3).
+This repository contains the code for accessing the consensus and PHOT network from the publication ["Widening the landscape of transcriptional regulation of algal photoprotection"](https://www.biorxiv.org/content/10.1101/2022.02.25.482034v3).
+via a web interface. The webinterface can be reached at [http://grn-web.bio.uni-potsdam.de/](http://grn-web.bio.uni-potsdam.de/)
 
-It also contains a simple web interface implemented in Shiny for using it from your browser.
-
+You can use the code in this repository to run a local version of the web-interface following the setup instructions below.
 
 ## Setup
 
@@ -30,8 +28,6 @@ if you need to keep your existing R installation untouched.
 
 
 ## Usage example
-
-The script `Program/example.R` contains an example of the functions and how they are used.
 
 To use the web interface, change into the `./Program` directory and execute `Rscript app.R`.
 It will show the URL you need to use in your browser, e.g. `http://127.0.0.1:3395`.
