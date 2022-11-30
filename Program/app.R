@@ -189,8 +189,9 @@ server <- function(input, output) {
           stop(safeError(e))
         }
       )
-    } else {
-      geneIds <- unlist(strsplit(input$geneIdsTextInput, split='\n'))
+    } else { # read / clean up gene IDs from text input field
+      rawGeneIdsList <- strsplit(input$geneIdsTextInput, split='\n')
+      geneIds <- unlist(lapply(rawGeneIdsList, trimws))
     }
 
     if (input$networkName == "consensus") {
@@ -216,9 +217,8 @@ server <- function(input, output) {
     coregs()
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 'g', 'g'))
 
-  # TODO: add geneIDs to file name ??? might be too many / better add geneIds filename?
   coregsFname <- reactive({
-    paste("top_", input$top_percent_targets, "_coregulators_in_", network, "_network", ".xlsx", sep = "")
+    paste("top_coregulators_in_", network, "_network", ".xlsx", sep = "")
   })
 
   output$downloadCoregs <- downloadHandler(
