@@ -189,8 +189,9 @@ server <- function(input, output) {
           stop(safeError(e))
         }
       )
-    } else {
-      geneIds <- unlist(strsplit(input$geneIdsTextInput, split='\n'))
+    } else { # read / clean up gene IDs from text input field
+      rawGeneIdsList <- strsplit(input$geneIdsTextInput, split='\n')
+      geneIds <- unlist(lapply(rawGeneIdsList, trimws))
     }
 
     if (input$networkName == "consensus") {
