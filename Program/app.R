@@ -36,7 +36,7 @@ ui <- fluidPage(
 
           sliderInput(
             inputId = "top_percent_targets",
-            label = "Top % of targets",
+            label = "Top n targets",
             min = 1,
             max = 100,
             value = 10)
