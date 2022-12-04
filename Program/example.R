@@ -32,6 +32,7 @@ cons_coreg = regulatorTranscriptionFactorList(consensus, cons_madstar1$target[1:
 phot_mads2coreg=regTFs(phot, phot_madstar2$name[1], 0.7)
 
 # avoid error "cannot open file 'Rplots.pdf'" in Docker container
+# NOTE: remove this line to see the plots!
 pdf(NULL)
 
 ## Analyse all targets in the consensus network for GO terms enriched
@@ -40,8 +41,7 @@ res1=cregoenricher(samples = list(cons_madstar1$target), universe = unique(conse
 enrichment_plots1 = web_ggendotplot(res1)
 
 ### draw enrichment plots in a grid
-#grid.newpage()
-#grid.draw(cbind(ggplotGrob(enrichment_plots1$heatmap), ggplotGrob(enrichment_plots1$goplot)))
+print_go_enrichment_plot(enrichment_plots1)
 
 res2=cregoenricher(samples = list(cons_madstar2$target), universe = unique(consensus$to), category = 'BP')
 enrichment_plots2 = web_ggendotplot(res2)

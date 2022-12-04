@@ -2,7 +2,6 @@ library(shiny)
 library(shinybusy)
 library(writexl)
 library(ggplot2)
-library(gridExtra)
 
 source('netwk_anav2.R')
 source('cregoenricherv9.r')
@@ -17,67 +16,97 @@ photNetwork = read.delim('../Data/gen3x0.1consens.tab', stringsAsFactors = FALSE
 GeneIds = as.list(unique(consensusNetwork$from))
 
 ui <- fluidPage(
-    # app title
-    titlePanel("GRN_web"),
+  # app title
+  titlePanel("GRN_web"),
 
-    # show that we're waiting for results
-    add_busy_spinner(spin = "fading-circle", position = "top-right"),
+  # show that we're waiting for results
+  shinybusy::add_busy_spinner(spin = "fading-circle", position = "top-right"),
 
-    # sidebar layout (inputs on the left, output on the right)
-    sidebarLayout(
+  tabsetPanel(
+    id = "tabset",
+    tabPanel(
+      id = "targets-panel",
+      "Top targets and significant enriched GO terms",
+      sidebarLayout(
+        sidebarPanel(
+          selectInput(
+            inputId = "geneID",
+            label = "Select gene ID",
+            choices = c(Choose="", GeneIds)),
 
-      # sidebar panel for inputs on the left
-      sidebarPanel(
-        selectInput(
-          inputId = "geneID",
-          label = "Select gene ID",
-          choices = c(Choose="", GeneIds)),
+          sliderInput(
+            inputId = "top_percent_targets",
+            label = "Top n targets",
+            min = 1,
+            max = 100,
+            value = 10)
+        ), # END sidebarPanel (in tabPanel "top-targets")
 
-        sliderInput(
-          inputId = "top_percent_targets",
-          label = "Top % of targets",
-          min = 1,
-          max = 100,
-          value = 10)
-      ),
+        mainPanel(
+          h4("Top targets in consensus network:"),
+          downloadButton("downloadconsTargets", "Download table"),
+          tableOutput(outputId = "consTargets"),
 
-      # main panel for outputs on the right
-      mainPanel(
-        h4("Top targets in consensus network:"),
-        downloadButton("downloadconsTargets", "Download table"),
-        tableOutput(outputId = "consTargets"),
+          tags$hr(), # horizontal line
+          h4("Top targets in PHOT network:"),
+          downloadButton("downloadPhotTargets", "Download table"),
+          tableOutput(outputId = "photTargets"),
 
-        tags$hr(), # horizontal line
-        h4("Top targets in PHOT network:"),
-        downloadButton("downloadPhotTargets", "Download table"),
-        tableOutput(outputId = "photTargets"),
-
-        tags$hr(), # horizontal line
-        h4(textOutput("coregsTitle")),
-
-        fileInput("geneIdsFile", "Choose File to upload (one gene ID per line)",
-          multiple = FALSE,
-          accept = c("text/csv",
-                     "text/comma-separated-values,text/plain",
-                     ".csv")),
-
-        # Input: Select network ----
-        radioButtons("networkName", "Network",
-                     choices = c(consensus = "consensus",
-                                 PHOT = "PHOT"),
-                     selected = "consensus"),
-
-        downloadButton("downloadCoregs", "Download table"),
-        tableOutput(outputId = "coregs"),
+          tags$hr(), # horizontal line
+          h4("Top 5 significant enriched GO terms (in 100% of targets):"),
+          plotOutput("enrichedConsGoPlotHeatmap"),
+          downloadButton("downloadEnrichedConsTargets", "Download table")
+        ) # END tabPanel("top-targets") >> sidebarLayout >> mainPanel
+      ) # END tabPanel("top-targets") >> sidebarLayout
+    ), # END tabPanel("top-targets")
 
 
-        tags$hr(), # horizontal line
-        h4("Top 5 significant enriched GO terms (in 100% of targets):"),
-        plotOutput("enrichedConsGoPlotHeatmap"),
-        downloadButton("downloadEnrichedConsTargets", "Download table")
-      )
-    )
-)
+    tabPanel(
+      id = "coregulators-panel",
+      "Top coregulators",
+      sidebarLayout(
+        sidebarPanel(
+
+          # Input: Choose "file upload" or enter gene IDs manually
+          radioButtons("geneIdsInputChoice", "Upload gene IDs or enter them manually?",
+                       choices = c("upload file" = "upload",
+                                   "enter manually" = "text-input"),
+                       selected = "text-input"),
+
+          conditionalPanel(
+            condition = "input.geneIdsInputChoice == 'upload'",
+            fileInput("geneIdsFile",
+                      "Choose File to upload (one gene ID per line)",
+                      multiple = FALSE,
+                      accept = c("text/csv", "text/comma-separated-values,text/plain",
+                                 ".csv"))),
+
+          conditionalPanel(
+            condition = "input.geneIdsInputChoice == 'text-input'",
+            textAreaInput("geneIdsTextInput", "Enter one gene ID per line", rows = 3)
+          ),
+
+          # Input: Select network ----
+          radioButtons("networkName", "Network",
+                       choices = c(consensus = "consensus",
+                                   PHOT = "PHOT"),
+                       selected = "consensus"),
+
+        ), # END tabPanel(coregulators-panel") >> sidebarLayout >> sidebarPanel
+
+        mainPanel(
+
+          h4(textOutput("coregsTitle")),
+          downloadButton("downloadCoregs", "Download table"),
+          tableOutput(outputId = "coregs"),
+
+        ) # END tabPanel(coregulators-panel") >> sidebarLayout >> mainPanel
+      ) # END tabPanel(coregulators-panel") >> sidebarLayout
+    ) # END tabPanel("coregulators-panel")
+
+  ) # END tabsetPanel
+) # END fluidPage
+
 
 server <- function(input, output) {
   # By default, renderTable() formats numbers differently than normal R.
@@ -139,7 +168,7 @@ server <- function(input, output) {
   )
 
 
-########################################################################
+  ########################################################################
 
 
   # Extract the top N coregulators from the consensus network regulator targets
@@ -147,40 +176,49 @@ server <- function(input, output) {
   # This will create twot plots in pdf format and 1 tsv with label legend for the nodes
   # in the parent directory.
   output$coregsTitle <- renderText({
-      sprintf("Top coregulators in %s network:", input$networkName)})
+    sprintf("Top coregulators in %s network:", input$networkName)})
 
   coregs <- reactive({
-    tryCatch(
-      {
-        geneIds <- scan(input$geneIdsFile$datapath, what="", sep='\n')
-      },
-      error = function(e) {
-        # return a safeError if a parsing error occurs
-        stop(safeError(e))
-      }
-    )
+    if (input$geneIdsInputChoice == "upload") {
+      tryCatch(
+        {
+          geneIds <- scan(input$geneIdsFile$datapath, what="", sep='\n')
+        },
+        error = function(e) {
+          # return a safeError if a parsing error occurs
+          stop(safeError(e))
+        }
+      )
+    } else { # read / clean up gene IDs from text input field
+      rawGeneIdsList <- strsplit(input$geneIdsTextInput, split='\n')
+      geneIds <- unlist(lapply(rawGeneIdsList, trimws))
+    }
 
     if (input$networkName == "consensus") {
-        network = consensusNetwork
+      network = consensusNetwork
     } else {
-        network = photNetwork
+      network = photNetwork
     }
 
     regulatorTranscriptionFactorList(netwk=network,
-      GOIs=geneIds,
-      topx=input$top_percent_targets,
-      file=NULL)
+                                     GOIs=geneIds,
+                                     topx=input$top_percent_targets,
+                                     file=NULL)
   })
 
   output$coregs = renderTable({
-    # don't calculate before gene IDs were uploaded
-    req(input$geneIdsFile)
+    if (input$geneIdsInputChoice == "upload") {
+      # don't calculate before gene IDs were uploaded
+      req(input$geneIdsFile)
+    } else {
+      # don't calculate before gene IDs were entered into the text box
+      req(input$geneIdsTextInput)
+    }
     coregs()
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 'g', 'g'))
 
-  # TODO: add geneIDs to file name ??? might be too many / better add geneIds filename?
   coregsFname <- reactive({
-    paste("top_", input$top_percent_targets, "_coregulators_in_", network, "_network", ".xlsx", sep = "")
+    paste("top_coregulators_in_", network, "_network", ".xlsx", sep = "")
   })
 
   output$downloadCoregs <- downloadHandler(
@@ -191,7 +229,7 @@ server <- function(input, output) {
   )
 
 
-########################################################################
+  ########################################################################
 
 
   # Analyse all targets in the consensus network for enriched GO terms
@@ -217,10 +255,9 @@ server <- function(input, output) {
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 's', 'g', 'g', 's', 'd'))
 
   output$enrichedConsGoPlotHeatmap <- renderPlot({
-    heatmap <- ggplot2::ggplotGrob(web_ggendotplot(enrichedConsTargets())$heatmap)
-    goplot <- ggplot2::ggplotGrob(web_ggendotplot(enrichedConsTargets())$goplot)
-    both <- gridExtra::arrangeGrob(heatmap, goplot, ncol=2)
-    plot(both)
+    require(grid)
+    grid.draw(cbind(ggplotGrob(web_ggendotplot(enrichedConsTargets())$heatmap),
+                    ggplotGrob(web_ggendotplot(enrichedConsTargets())$goplot)))
   })
 
   enrichedConsTargetsFname <- reactive({
@@ -235,5 +272,4 @@ server <- function(input, output) {
 
 } # END server()
 
-# Run the shiny app with the options given above
 shinyApp(ui = ui, server = server)

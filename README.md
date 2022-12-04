@@ -1,11 +1,9 @@
 # GRN_web
 
-This repository contains the code for accessing the consensus and PHOT network
-from the publication 
-[Arend et al. Widening the landscape of transcriptional regulation of algal photoprotection](https://www.biorxiv.org/content/10.1101/2022.02.25.482034v3).
+This repository contains the code for accessing the consensus and PHOT network from the publication ["Widening the landscape of transcriptional regulation of algal photoprotection"](https://www.biorxiv.org/content/10.1101/2022.02.25.482034v3).
+via a web interface. The webinterface can be reached at [http://grn-web.bio.uni-potsdam.de/](http://grn-web.bio.uni-potsdam.de/)
 
-It also contains a simple web interface implemented in Shiny for using it from your browser.
-
+You can use the code in this repository to run a local version of the web-interface following the setup instructions below.
 
 ## Setup
 
@@ -31,12 +29,25 @@ if you need to keep your existing R installation untouched.
 
 ## Usage example
 
-The script `Program/example.R` contains an example of the functions and how they are used.
-
-To use the web interface, change into the `./Program` directory and execute `Rscript app.R`.
+To use the web interface, change into the `./Program` directory and execute `Rscript app.R 
 It will show the URL you need to use in your browser, e.g. `http://127.0.0.1:3395`.
-This is how the app looks like:
+Or you can use our [public server](http://grn-web.bio.uni-potsdam.de/)
+
+### Target predictions
+To get target predictions of a regulator you are interested in use the drop-down menu in the "Top targets and significant enriched GO terms" tab to search for its JGI Gene ID.
+![Target predictions](Fig1.png)
+You can select the number of top targets you want to extract and download them in .xlsx format via the button
+
+### GO enrichment of target genes
+The tool will automatically check for GO terms significantly enriched in the set of all target genes and plot information on the 5 GO terms with lowest adjusted p-value. 
+![GO enrichment](Fig2.png) 
+The left panel gives a heatmap of the pairwise jaccard indes between the genes linked to a given GO term in your targets. The right panel plots the size of ther partition in the whole set of target genes, and indicates the absolut number (dot size) and the Benjamini-Hochberg adjusted p-value (color). The plotted information can be downloaded together with info on all other enriched GO terms via the button.
+### Coregulator prediction
+You can use the "Top coregulators" tab to enter or upload a list of JGI gene IDs for which the top 10 strongest coregulators will be extracted in a table ready for download as a .xlsx file. 
+![Coregulator prediction](Fig3.png)
 
 ![GRN_web demo screencast](grn-web-demo.gif)
+
+
 
 
