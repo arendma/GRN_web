@@ -40,7 +40,7 @@ ui <- fluidPage(
             min = 1,
             max = 100,
             value = 10)
-        ), # END sidebarPanel (in tabPanel "top-targets")
+        ), # END sidebarPanel (in tabPanel "targets-panel")
 
         mainPanel(
           h4("Top targets in consensus network:"),
@@ -56,9 +56,9 @@ ui <- fluidPage(
           h4("Top 5 significant enriched GO terms (in 100% of targets):"),
           plotOutput("enrichedConsGoPlotHeatmap"),
           downloadButton("downloadEnrichedConsTargets", "Download table")
-        ) # END tabPanel("top-targets") >> sidebarLayout >> mainPanel
-      ) # END tabPanel("top-targets") >> sidebarLayout
-    ), # END tabPanel("top-targets")
+        ) # END tabPanel("targets-panel") >> sidebarLayout >> mainPanel
+      ) # END tabPanel("targets-panel") >> sidebarLayout
+    ), # END tabPanel("targets-panel")
 
 
     tabPanel(
