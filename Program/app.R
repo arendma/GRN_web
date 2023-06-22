@@ -39,7 +39,15 @@ ui <- fluidPage(
             label = "Top n targets",
             min = 1,
             max = 100,
-            value = 10)
+            value = 10),
+          br(),
+          p(paste("This is a shiny web app for easy access of the gene regulatory networks presented",
+          "in the study 'Widening the landscape of transcriptional regulation of green algal photoprotection'", 
+          "(DOI: 10.1038/s41467-023-38183-4). The source code is availble at:")),
+          a("https://github.com/arendma/GRN_web", 
+            target = "_blank",
+            href = "https://github.com/arendma/GRN_web"),
+          p("Please use the github issue system to report any bugs.")
         ), # END sidebarPanel (in tabPanel "top-targets")
 
         mainPanel(
