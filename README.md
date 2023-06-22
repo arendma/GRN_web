@@ -26,6 +26,17 @@ if you need to keep your existing R installation untouched.
 - afterwards, you can start the container like this: `docker run --env PORT=8181 -p 8181:8181 -it grn-web`
 - now, visit http://localhost:8181/ in your browser to use GRN_web
 
+### Installation on a server
+
+After following the Docker-based installation, you can also run it on a server.
+You can use `systemd` to automatically start `GRN_web` whenever your server starts ie.g. by copying `start_grnweb_server.sh` to `/usr/local/bin/start_grnweb_server.sh` and `grn-web.service` to `/etc/systemd/system/grn-web.service`.
+
+Afterwards, enable and start the service like this:
+
+```
+sudo systemctl enable grn-web
+sudo systemctl start grn-web
+```
 
 ## Usage example
 
