@@ -26,12 +26,23 @@ if you need to keep your existing R installation untouched.
 - afterwards, you can start the container like this: `docker run --env PORT=8181 -p 8181:8181 -it grn-web`
 - now, visit http://localhost:8181/ in your browser to use GRN_web
 
+### Installation on a server
+
+After following the Docker-based installation, you can also run it on a server.
+You can use `systemd` to automatically start `GRN_web` whenever your server starts e.g. by copying `start_grnweb_server.sh` to `/usr/local/bin/start_grnweb_server.sh` and `grn-web.service` to `/etc/systemd/system/grn-web.service`.
+
+Afterwards, enable and start the service like this:
+
+```
+sudo systemctl enable grn-web
+sudo systemctl start grn-web
+```
 
 ## Usage example
 
 To use the web interface, change into the `./Program` directory and execute `Rscript app.R 
 It will show the URL you need to use in your browser, e.g. `http://127.0.0.1:3395`.
-Or you can use our [public server](http://grn-web.bio.uni-potsdam.de/)
+Or you can use our [public server](http://grn-web.bio.uni-potsdam.de/).
 
 ### Target predictions
 To get target predictions of a regulator you are interested in use the drop-down menu in the "Top targets and significant enriched GO terms" tab to search for its JGI Gene ID.

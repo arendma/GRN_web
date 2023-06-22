@@ -1,0 +1,11 @@
+[Unit]
+Description=Start grn-web as a Docker container
+After=docker.service
+Requires=docker.service
+
+[Service]
+ExecStart=/usr/local/bin/start_grnweb_server.sh
+
+[Install]
+WantedBy=multi-user.target
+
