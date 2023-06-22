@@ -226,7 +226,7 @@ server <- function(input, output) {
   }, digits=targetsTableNumDigits, display=c('s', 's', 's', 's', 'g', 'g'))
 
   coregsFname <- reactive({
-    paste("top_coregulators_in_", network, "_network", ".xlsx", sep = "")
+    paste("top_coregulators_in_", input$networkName, "_network", ".xlsx", sep = "")
   })
 
   output$downloadCoregs <- downloadHandler(
