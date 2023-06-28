@@ -1,4 +1,6 @@
-source('genenamecleanupv2.R')
+library(here)
+
+source(here('Program', 'genenamecleanupv2.R'))
 
 # Functions to extract prediction from grns
 

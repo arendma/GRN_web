@@ -1,5 +1,5 @@
 #setup script installing nescessary packages if not present
-packages = c("igraph", "shiny", "shinybusy", "readxl", "writexl", "ggplot2", "remotes", "sass", "xtable", "gridExtra")
+packages = c("igraph", "shiny", "shinybusy", "readxl", "writexl", "ggplot2", "remotes", "sass", "xtable", "gridExtra", "testthat", "here")
 bioc_packages = c("graph", "GO.db", "topGO")
 
 for (pkg in packages) {
