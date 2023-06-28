@@ -14,4 +14,5 @@ run-shiny-prod:
 	docker run --restart=always --env PORT=80 -p 80:80 -it grn-web
 
 test:
-	docker run -it grn-web Rscript example.R
+	docker run -it grn-web Rscript Program/example.R
+	docker run -it grn-web Rscript run_tests.R

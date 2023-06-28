@@ -16,8 +16,10 @@ RUN Rscript /opt/grn-web/Program/setup.R
 COPY Program/ /opt/grn-web/Program/
 COPY Data/ /opt/grn-web/Data/
 COPY README.md /opt/grn-web/
+COPY run_tests.R /opt/grn-web/
+COPY tests/ opt/grn-web/tests/
 
-WORKDIR /opt/grn-web/Program
+WORKDIR /opt/grn-web
 
 # open port used by our shiny app (when run via 'make run-shiny')
 EXPOSE 8181
