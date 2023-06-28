@@ -2,15 +2,16 @@ library(shiny)
 library(shinybusy)
 library(writexl)
 library(ggplot2)
+library(here)
 
-source('netwk_anav2.R')
-source('cregoenricherv9.r')
-source('web_ggendotplot.r')
+source(here('Program/netwk_anav2.R'))
+source(here('Program/cregoenricherv9.r'))
+source(here('Program/web_ggendotplot.r'))
 
 # consensus network
-consensusNetwork = read.delim('../Data/consensus0.1.tab', stringsAsFactors = FALSE)
+consensusNetwork = read.delim(here('Data/consensus0.1.tab'), stringsAsFactors = FALSE)
 # PHOT network
-photNetwork = read.delim('../Data/gen3x0.1consens.tab', stringsAsFactors = FALSE)
+photNetwork = read.delim(here('Data/gen3x0.1consens.tab'), stringsAsFactors = FALSE)
 
 # TODO: use all gene IDs (consensus and phot network, source and target nodes)
 GeneIds = as.list(unique(consensusNetwork$from))
