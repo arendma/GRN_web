@@ -1,3 +1,5 @@
+library(here)
+
 cregoenricher <- function(samples, universe, category="BP", k=4, nGO=5)  {
   #Function to analyze for GO enrichment in CRE gene sample list, compared to universe. Plots a 
   # plot with the results to the current active graphic device
@@ -24,7 +26,7 @@ cregoenricher <- function(samples, universe, category="BP", k=4, nGO=5)  {
   }
   ##GO enrichment
   #Import C.re. GO terms from file
-  annot <- read.delim(file = "../Data/Creinhardtii_281_v5.6.annotation_info.txt",header = T,sep = "\t",row.names = 1,stringsAsFactors = F)
+  annot <- read.delim(file = here("Data/Creinhardtii_281_v5.6.annotation_info.txt"),header = T,sep = "\t",row.names = 1,stringsAsFactors = F)
   anno <- sapply(unique(annot$locusName),function(n){return(unique(unlist(strsplit(c(annot$GO[which(annot$locusName==n)]),split = " "))))})
   #They should be unique
   gnames <- unique(names(anno))
@@ -78,19 +80,19 @@ cregoenricher <- function(samples, universe, category="BP", k=4, nGO=5)  {
   
   ###Import own gene list
   #Import compiled NPQ gene list
-  NPQ_goi=read.delim('../Data/NPQ genes.txt')
+  NPQ_goi=read.delim(here('Data/NPQ genes.txt'))
   NPQ_goi=NPQ_goi[nchar(NPQ_goi$ID5_5)>0,]
   #add an entry with the genes present in the universe - id has to be 10 character long
   GO_mygene=c(GO_mygene, 'OWN:000001'=list(NPQ_goi$ID5_5[NPQ_goi$ID5_5 %in% universe]))
   #Add term to term list
   GO2NAME=c(GO2NAME, 'OWN:000001'='Photoprotective response related')
   #Import compiled CCM list
-  CCM_goi=read.delim('../Data/CCM genes.txt')
+  CCM_goi=read.delim(here('Data/CCM genes.txt'))
   CCM_goi=CCM_goi[nchar(CCM_goi$ID5_5)>0,]
   GO_mygene=c(GO_mygene, 'OWN:000002'=list(CCM_goi$ID5_5[CCM_goi$ID5_5 %in% universe]))
   GO2NAME=c(GO2NAME, 'OWN:000002'='Ci Concentration Mechanism related')
   #Import selected nitrogen genes based on schollinger study 
-  N2_goi=read_excel('../Data/used_genes_schmollinger_et_al.xlsx')
+  N2_goi=read_excel(here('Data/used_genes_schmollinger_et_al.xlsx'))
   GO_mygene=c(GO_mygene, 'OWN:000003'=list(N2_goi$LocusID[N2_goi$LocusID %in% universe]))
   GO2NAME=c(GO2NAME, 'OWN:000003'='Nitrogen starvation response genes')
   
