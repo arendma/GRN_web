@@ -21,4 +21,4 @@ jobs:
     - name: "Run test.r example script"
       run: docker run -t grn-web Rscript Program/example.R
     - name: "Run all testthat tests"
-      run: docker run -it grn-web Rscript run_tests.R
+      run: docker run -t grn-web Rscript run_tests.R
