@@ -4,38 +4,50 @@ source(here('Program', 'genenamecleanupv2.R'))
 
 # Functions to extract prediction from grns
 
+regtarget = function(network, gene_id, top_genes = NULL) {
+  # This function takes a data frame 'network' where columns are df[1] = 'from',
+  # df[2] = 'to', df[3] = interaction strength (either weight or rank),
+  # a JGI Cre5.5 'gene_id', and 'top_genes' which can be an integer of highest ranked genes
+  # to return, a float between 0-1 that gives the relative amount of highest
+  # ranking genes to return or a list of gene IDs.
+  #
+  # If a list of gene names is given, all genes above the lowest ranking of these
+  # genes is returned. If 'top_genes' = NULL, all results are returned.
+  phyto_gene_names =  genenamecleanup()
 
-regtarget = function(netwk, reg_ID5_5, topx=NULL) {
-  #Takes a data.file network where columns are df[1]=from, df[2]=to, df[3], interaction strenth (either weight or rank) and 
-  #a JGI Cre5.5 gene ID, and topx which is either an integer of highest ranked genes to return, a float between 0-1 that gives the 
-  # relative amount of highest ranking genes to return 
-  #or a list of gene IDs. If  a list of genen names is given all genes above the lowest ranking of these
-  #genes is returned. if topx=NULL all results are returned 
-  phyto_gn =  genenamecleanup()
-  if(colnames(netwk)[3]!='weight') {
-    netwk <- data.frame(netwk, weight = 1/netwk[,3])
-    print('Warning! no weight column present assumed ranks as 3rd network column and appended 1/3rd column as weight')
+  # Check if 'weight' column exists, else create it
+  if (!('weight' %in% colnames(network))) {
+    network$weight = 1 / network[,3]
+    warning('No weight column present. Assumed ranks as 3rd network column and appended 1/3rd column as weight.')
   }
-  res=netwk[netwk$from %in% reg_ID5_5,]
-  res=res[order(abs(res$weight), decreasing=TRUE),]
-  #if topx=NULL return all results
-  if (is.null(topx)) {
-    topx=dim(res)[1]
-  #if topix is a gene list grep indices from ordered results and set topx to maximum index 
-  #(get all genes with higher confidence then the supplied ones)
-  } else if (topx<=1) {
-    topx=floor(dim(res)[1]*topx)
-    } else if (is.character(topx)) {
-    indx=sapply(topx, function(x) grep(pattern=x, x=res$to)[1])
-    if (length(indx)==0) {
-      stop('Error topx genes not found in results!')
+
+  # Filter network based on the gene_id
+  results = network[network$from %in% gene_id,]
+
+  # Order the results based on the absolute value of weight
+  results = results[order(abs(results$weight), decreasing = TRUE),]
+
+  # Determine the number of top genes to return
+  if (is.null(top_genes)) {
+    top_genes = nrow(results)
+  } else if (is.numeric(top_genes) && top_genes <= 1) {
+    top_genes = floor(nrow(results) * top_genes)
+  } else if (is.character(top_genes)) {
+    indices = sapply(top_genes, function(x) grep(pattern = x, x = results$to)[1])
+    if (length(indices) == 0) {
+      stop('Error: top_genes not found in results!')
     }
-    #print(indx)
-    topx=max(indx, na.rm = TRUE)
+    top_genes = max(indices, na.rm = TRUE)
   }
-  res= data.frame(target= res[1:topx, 'to'], name=sapply(res[1:topx, 'to'], gn_match, gndf=phyto_gn),weight= res[1:topx, 'weight'])
-  return(res[1:topx,])
+
+  # Create the final results data frame
+  final_results = data.frame(target = results[1:top_genes, 'to'],
+                             name = sapply(results[1:top_genes, 'to'], gn_match, gndf = phyto_gene_names),
+                             weight = results[1:top_genes, 'weight'])
+
+  return(final_results)
 }
+
 
 regTFs = function(netwk, target_ID5_5, topx=NULL){
   #Extracts regulators of a single gene
@@ -146,7 +158,7 @@ regulatorTranscriptionFactorList <- function(netwk, GOIs, topx=25,  file=NULL) {
   }
   #detach('package:igraph', unload =TRUE)
   return(topreg)
-}  
+}
 
 
 
