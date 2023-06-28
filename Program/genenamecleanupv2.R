@@ -1,10 +1,12 @@
+library(here)
+
 genenamecleanup <- function() {
   #Takes a phytozome geneName.txt file removes the transcript IDs and joins together the genenames for 
   #loci with more than 1 characterized transcript 
   #value: a dataframe with column 'locus' and 'name'
   ####genename <- read.delim('../Data/Creinhardtii_281_v5.5.geneName.txt', header=F, stringsAsFactors = Fl)
   ####colnames(genename)=c('locus', 'name')
-  con = file('../Data/Creinhardtii_281_v5.6.geneName.txt', open = 'r')
+  con = file(here('Data/Creinhardtii_281_v5.6.geneName.txt'), open = 'r')
   gn <- list()
   while (TRUE) {
     line = readLines(con, n=1)
