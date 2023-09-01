@@ -8,10 +8,12 @@ run-bash:
 	docker run -v /tmp/grn-web:/tmp/grn-web -it grn-web:latest bash
 
 run-shiny:
-	docker run --env PORT=8181 -p 8181:8181 -it grn-web:latest
+	mkdir -p ~/shiny-logs
+	docker run -v ~/shiny-logs:/var/log/shiny-server --env PORT=8181 -p 8181:8181 -it grn-web:latest
 
 run-shiny-prod:
-	docker run --name grn-web --env PORT=80 -p 80:80 -d grn-web:latest
+	mkdir -p ~/shiny-logs
+	docker run -v ~/shiny-logs:/var/log/shiny-server --name grn-web --env PORT=80 -p 80:80 -d grn-web:latest
 
 test:
 	docker run -it grn-web:latest Rscript example.R

@@ -1,6 +1,6 @@
 FROM bioconductor/bioconductor_docker:RELEASE_3_14
 
-# set non-root (Heroku requires this)
+# use non-root user to run Shiny server
 RUN useradd shiny_user
 # make all app files readable, gives rwe permisssion
 RUN mkdir /opt/grn-web && chown -R shiny_user:shiny_user /opt/grn-web
@@ -13,6 +13,9 @@ USER shiny_user
 COPY Program/setup.R /opt/grn-web/Program/
 RUN Rscript /opt/grn-web/Program/setup.R
 
+# Copy the config file into the container
+COPY shiny-server.conf /etc/shiny-server/
+
 COPY Program/ /opt/grn-web/Program/
 COPY Data/ /opt/grn-web/Data/
 COPY README.md /opt/grn-web/
@@ -23,6 +26,6 @@ WORKDIR /opt/grn-web/Program
 EXPOSE 8181
 EXPOSE 80
 
-# run app on container start (use heroku port variable for deployment)
+# run app on container start (use PORT env for deployment, see Makefile for examples)
 CMD ["R", "-e", "shiny::runApp('/opt/grn-web/Program', host = '0.0.0.0', port = as.numeric(Sys.getenv('PORT')))"]
 
